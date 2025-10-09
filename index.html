@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Årshjul - Tverrkirkelig</title>
+    <link rel="icon" href="https://tverrkirkelig.no/wp-content/uploads/2021/09/cropped-Logo_1200_trans-1-150x150.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <img src="https://tverrkirkelig.no/wp-content/uploads/2021/10/Ltu_Logo-160x165.png" alt="Tverrkirkelig Logo" class="logo">
+                <h1>Årshjul</h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="filter-section">
+                <h2>Filtrer oppgaver</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-role="all">Alle</button>
+                    <button class="filter-btn" data-role="Styret">Styret</button>
+                    <button class="filter-btn" data-role="Admin">Admin</button>
+                    <button class="filter-btn" data-role="Lokallag">Lokallag</button>
+                </div>
+            </div>
+
+            <div id="tasks-container" class="tasks-container">
+                <!-- Tasks will be dynamically rendered here -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 Tverrkirkelig. Alle rettigheter reservert.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
