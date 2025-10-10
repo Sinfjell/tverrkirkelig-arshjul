@@ -1,38 +1,34 @@
-// State
+// Global state
 let allTasks = [];
 let currentFilter = 'all';
-let completedTasks = new Set(); // Track completed tasks
+let completedTasks = new Set();
+
+const monthNames = [
+    'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni',
+    'Juli', 'August', 'September', 'Oktober', 'November', 'Desember'
+];
 
 // Load completed tasks from Firebase
 async function loadCompletedTasks() {
     try {
-        // Fallback to localStorage if Firebase not available
         if (!window.db) {
             const saved = localStorage.getItem('completedTasks');
-            if (saved) {
-                completedTasks = new Set(JSON.parse(saved));
-            }
+            if (saved) completedTasks = new Set(JSON.parse(saved));
             return;
         }
         
-        // Load from Firebase
         const snapshot = await getDocs(collection(window.db, 'taskStatus'));
         completedTasks.clear();
         
         snapshot.forEach((doc) => {
-            if (doc.data().completed) {
-                completedTasks.add(doc.id);
-            }
+            if (doc.data().completed) completedTasks.add(doc.id);
         });
         
         console.log('Loaded completed tasks from Firebase:', completedTasks.size);
     } catch (error) {
         console.error('Error loading completed tasks:', error);
-        // Fallback to localStorage
         const saved = localStorage.getItem('completedTasks');
-        if (saved) {
-            completedTasks = new Set(JSON.parse(saved));
-        }
+        if (saved) completedTasks = new Set(JSON.parse(saved));
     }
 }
 
@@ -67,26 +63,19 @@ async function saveTaskStatus(taskId, completed) {
     try {
         const task = allTasks.find(t => t.id === taskId);
         
-        // If completing an overdue task, move it to next year
         if (completed && task && isTaskOverdue(task)) {
             moveTaskToNextYear(taskId);
-            // Store completion year for rolling year logic
             localStorage.setItem(`task_${taskId}_completed_year`, new Date().getFullYear().toString());
-        }
-        // If unchecking a task, move it back to current year
-        else if (!completed && task) {
+        } else if (!completed && task) {
             moveTaskToCurrentYear(taskId);
-            // Remove completion year tracking
             localStorage.removeItem(`task_${taskId}_completed_year`);
         }
         
-        // Fallback to localStorage if Firebase not available
         if (!window.db) {
             localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
             return;
         }
         
-        // Save single task to Firebase
         const taskRef = doc(window.db, 'taskStatus', taskId);
         await setDoc(taskRef, {
             completed: completed,
@@ -97,104 +86,74 @@ async function saveTaskStatus(taskId, completed) {
         console.log(`Saved task ${taskId} to Firebase: ${completed}`);
     } catch (error) {
         console.error('Error saving task status:', error);
-        // Fallback to localStorage
         localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
     }
 }
 
-// Legacy function for localStorage fallback
-async function saveCompletedTasks() {
+function saveCompletedTasks() {
     localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
 }
 
-// Get all task IDs for Firebase sync
-async function getAllTaskIds() {
-    const taskIds = allTasks.map(task => task.id);
-    return taskIds;
+function getAllTaskIds() {
+    return allTasks.map(task => task.id);
 }
 
-// Month names in Norwegian
-const monthNames = [
-    'Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Desember', 'Løpende'
-];
-
-// Check for full reset on January 1st (new year cycle)
 function checkForNewYearReset() {
     const today = new Date();
-    const isNewYear = today.getMonth() === 0 && today.getDate() === 1; // January 1st
+    const isNewYear = today.getMonth() === 0 && today.getDate() === 1;
     const currentYear = today.getFullYear();
-    
-    // Check if we've already reset this year
     const lastResetYear = localStorage.getItem('lastNewYearReset');
     
     if (isNewYear && (!lastResetYear || parseInt(lastResetYear) < currentYear)) {
-        // Full reset for new year
         completedTasks.clear();
         localStorage.removeItem('completedTasks');
         
-        // Clear all task completion years
         allTasks.forEach(task => {
             localStorage.removeItem(`task_${task.id}_completed_year`);
         });
         
-        // Mark this year as reset
         localStorage.setItem('lastNewYearReset', currentYear.toString());
-        
-        console.log(`🎉 FULL RESET for new year ${currentYear}! All tasks unchecked.`);
-        
-        // Save the reset state
+        console.log(`🎉 FULL RESET for new year ${currentYear}!`);
         saveCompletedTasks();
     }
 }
 
-// Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTasks();
     await loadCompletedTasks();
-    checkForNewYearReset(); // Check for new year reset
+    checkForNewYearReset();
     setupFilterButtons();
     renderTasks();
     setupFirebaseListener();
 });
 
-// Normalize task dates to current/next year based on month
 function normalizeDateToCurrentYear(task) {
     if (!task.dueDate) return task;
     
     const today = new Date();
     const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-11
-    
+    const currentMonth = today.getMonth();
     const dueDate = new Date(task.dueDate);
-    const taskMonth = task.month - 1; // Convert 1-12 to 0-11
+    const taskMonth = task.month - 1;
     
-    // If task month is before current month, it should be next year
-    // If task month is current or after, it should be this year
     let targetYear = currentYear;
     if (taskMonth < currentMonth) {
         targetYear = currentYear + 1;
     }
     
-    // Update the due date with the correct year
     dueDate.setFullYear(targetYear);
-    task.dueDate = dueDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    task.dueDate = dueDate.toISOString().split('T')[0];
     
     return task;
 }
 
-// Load tasks from JSON file
 async function loadTasks() {
     try {
         const response = await fetch('data/tasks.json');
-        if (!response.ok) {
-            throw new Error('Could not load tasks');
-        }
-        let tasks = await response.json();
+        if (!response.ok) throw new Error('Could not load tasks');
         
-        // Normalize all task dates to current/next year
+        const tasks = await response.json();
         allTasks = tasks.map(task => normalizeDateToCurrentYear(task));
-        
         console.log('Tasks loaded and normalized to current year cycle');
     } catch (error) {
         console.error('Error loading tasks:', error);
@@ -202,79 +161,56 @@ async function loadTasks() {
     }
 }
 
-// Setup filter button event listeners
 function setupFilterButtons() {
     const filterButtons = document.querySelectorAll('.filter-btn');
     
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Update active state
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
-            // Update filter and re-render
             currentFilter = button.dataset.role;
             renderTasks();
         });
     });
 }
 
-// Filter tasks based on current filter
 function getFilteredTasks() {
-    if (currentFilter === 'all') {
-        return allTasks;
-    }
-    
-    return allTasks.filter(task => {
-        // If task has no role, show it in all filters
-        if (!task.role || task.role === '') {
-            return true;
-        }
-        return task.role === currentFilter;
-    });
+    if (currentFilter === 'all') return allTasks;
+    return allTasks.filter(task => task.role === currentFilter || !task.role);
 }
 
-// Get current month (1-12)
 function getCurrentMonth() {
-    return new Date().getMonth() + 1; // JavaScript months are 0-indexed
+    return new Date().getMonth() + 1;
 }
 
-// Get sorted month order starting from current month
 function getSortedMonthOrder() {
     const currentMonth = getCurrentMonth();
-    const order = [];
+    const months = [];
     
-    // Start from current month to end of year
-    for (let i = currentMonth; i <= 12; i++) {
-        order.push(i);
+    for (let i = 0; i < 12; i++) {
+        const month = ((currentMonth - 1 + i) % 12) + 1;
+        months.push(month);
     }
     
-    // Then wrap around to start of year until current month
-    for (let i = 1; i < currentMonth; i++) {
-        order.push(i);
-    }
-    
-    // Note: Removed 'lopende' section as requested
-    
-    return order;
+    return months;
 }
 
-// Check if a task is overdue
 function isTaskOverdue(task) {
     if (!task.dueDate) return false;
-    const dueDate = new Date(task.dueDate);
+    
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to start of day
+    today.setHours(0, 0, 0, 0);
+    const dueDate = new Date(task.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+    
     return dueDate < today;
 }
 
-// Check if a month is before current month
 function isMonthBeforeCurrent(month) {
     const currentMonth = getCurrentMonth();
     return month < currentMonth;
 }
 
-// Sort tasks within a month (smart sorting based on completion and due date)
 function sortTasksInMonth(tasks, monthId) {
     const isPastMonth = isMonthBeforeCurrent(monthId);
     
@@ -284,9 +220,7 @@ function sortTasksInMonth(tasks, monthId) {
         const aOverdue = isPastMonth || isTaskOverdue(a);
         const bOverdue = isPastMonth || isTaskOverdue(b);
         
-        // Priority 1: Unchecked overdue/past month tasks (top)
         if (!aCompleted && aOverdue && (!bCompleted && bOverdue)) {
-            // Both unchecked and overdue, sort by due date
             if (a.dueDate && b.dueDate) {
                 return new Date(a.dueDate) - new Date(b.dueDate);
             }
@@ -295,9 +229,7 @@ function sortTasksInMonth(tasks, monthId) {
         if (!aCompleted && aOverdue) return -1;
         if (!bCompleted && bOverdue) return 1;
         
-        // Priority 2: Unchecked non-overdue tasks
         if (!aCompleted && !aOverdue && (!bCompleted && !bOverdue)) {
-            // Sort by due date if both have dates
             if (a.dueDate && b.dueDate) {
                 return new Date(a.dueDate) - new Date(b.dueDate);
             }
@@ -306,14 +238,11 @@ function sortTasksInMonth(tasks, monthId) {
         if (!aCompleted && !aOverdue) return -1;
         if (!bCompleted && !bOverdue) return 1;
         
-        // Priority 3: Checked non-overdue tasks
         if (aCompleted && !aOverdue && (bCompleted && !bOverdue)) return 0;
         if (aCompleted && !aOverdue) return -1;
         if (bCompleted && !bOverdue) return 1;
         
-        // Priority 4: Checked overdue/past month tasks (bottom)
         if (aCompleted && aOverdue && (bCompleted && bOverdue)) {
-            // Both checked and overdue, sort by due date (oldest at bottom)
             if (a.dueDate && b.dueDate) {
                 return new Date(b.dueDate) - new Date(a.dueDate);
             }
@@ -323,23 +252,19 @@ function sortTasksInMonth(tasks, monthId) {
     });
 }
 
-// Organize tasks by month
 function organizeTasksByMonth(tasks) {
     const tasksByMonth = {};
     
-    // Initialize all months
     for (let i = 1; i <= 12; i++) {
         tasksByMonth[i] = [];
     }
     
-    // Group tasks by month (skip tasks without month)
     tasks.forEach(task => {
         if (task.month !== null) {
             tasksByMonth[task.month].push(task);
         }
     });
     
-    // Sort tasks within each month
     Object.keys(tasksByMonth).forEach(month => {
         tasksByMonth[month] = sortTasksInMonth(tasksByMonth[month], month);
     });
@@ -347,26 +272,23 @@ function organizeTasksByMonth(tasks) {
     return tasksByMonth;
 }
 
-// Get overdue tasks (unchecked tasks that are past their due date)
 function getOverdueTasks(tasks) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
     return tasks.filter(task => {
-        if (completedTasks.has(task.id)) return false; // Skip completed tasks
-        if (!task.dueDate) return false; // Skip tasks without due date
+        if (completedTasks.has(task.id)) return false;
+        if (!task.dueDate) return false;
         
         const dueDate = new Date(task.dueDate);
         dueDate.setHours(0, 0, 0, 0);
         
         return dueDate < today;
     }).sort((a, b) => {
-        // Sort by due date, oldest first
         return new Date(a.dueDate) - new Date(b.dueDate);
     });
 }
 
-// Render all tasks
 function renderTasks() {
     const container = document.getElementById('tasks-container');
     const filteredTasks = getFilteredTasks();
@@ -383,7 +305,6 @@ function renderTasks() {
     
     let html = '';
     
-    // Render "Over fristen" section at the top
     const overdueTasks = getOverdueTasks(filteredTasks);
     if (overdueTasks.length > 0) {
         html += '<div class="overdue-section">';
@@ -395,11 +316,9 @@ function renderTasks() {
         html += '</div></div>';
     }
     
-    // Render regular month sections
     const tasksByMonth = organizeTasksByMonth(filteredTasks);
     const sortedMonths = getSortedMonthOrder();
     
-    // Render months in sorted order (starting from current month)
     sortedMonths.forEach(month => {
         const monthTasks = tasksByMonth[month];
         
@@ -410,60 +329,55 @@ function renderTasks() {
     });
     
     container.innerHTML = html;
-    
-    // Setup checkbox event listeners
     setupCheckboxListeners();
 }
 
-// Render a month section
 function renderMonthSection(monthId, monthName, tasks) {
     const tasksHtml = tasks.map(task => renderTaskCard(task)).join('');
     
     return `
         <div class="month-section" data-month="${monthId}">
             <h2 class="month-header">${monthName}</h2>
-            <div class="tasks-list">
+            <div class="month-tasks">
                 ${tasksHtml}
             </div>
         </div>
     `;
 }
 
-// Render a single task card
 function renderTaskCard(task) {
     const roleClass = task.role ? task.role.toLowerCase() : '';
     const roleBadge = task.role ? `<span class="role-badge ${roleClass}">${task.role}</span>` : '';
     const isCompleted = completedTasks.has(task.id);
     const isPastMonth = isMonthBeforeCurrent(task.month);
     const isOverdue = isTaskOverdue(task);
-    const needsAttention = (isPastMonth || isOverdue) && !isCompleted;
-    
-    // Build single-line info
+    const needsAttention = (isPastMonth && !isCompleted) || (isOverdue && !isCompleted);
+
     const infoParts = [];
-    
+
     if (task.assignees && task.assignees.length > 0) {
         infoParts.push(`<strong>Ansvarlig:</strong> ${task.assignees.join(', ')}`);
     }
-    
+
     if (task.dueDate) {
         const dateStr = formatDate(task.dueDate);
         const overdueLabel = needsAttention ? ' <span class="overdue-badge">⚠️ Over fristen</span>' : '';
         infoParts.push(`<strong>Frist:</strong> ${dateStr}${overdueLabel}`);
     }
-    
+
     const infoLine = infoParts.length > 0 ? `<div class="task-info-line">${infoParts.join(' • ')}</div>` : '';
-    
+
     const sopLinkHtml = task.sopUrl
         ? `<a href="${task.sopUrl}" target="_blank" rel="noopener noreferrer" class="sop-link">📄 SOP</a>`
         : '';
-    
+
     const cardClasses = [
         'task-card',
         `role-${roleClass}`,
         isCompleted ? 'completed' : '',
         needsAttention ? 'overdue' : ''
     ].filter(Boolean).join(' ');
-    
+
     return `
         <div class="${cardClasses}" data-role="${task.role || 'all'}" data-task-id="${task.id}">
             <div class="task-header">
@@ -481,7 +395,6 @@ function renderTaskCard(task) {
     `;
 }
 
-// Setup Firebase real-time listener
 function setupFirebaseListener() {
     if (!window.db) return;
     
@@ -490,7 +403,6 @@ function setupFirebaseListener() {
         let isFirstLoad = true;
         
         onSnapshot(q, (snapshot) => {
-            // Skip first load since we already loaded data
             if (isFirstLoad) {
                 isFirstLoad = false;
                 console.log('Firebase listener initialized');
@@ -499,16 +411,12 @@ function setupFirebaseListener() {
             
             console.log('Firebase data changed from another user, updating UI...');
             
-            // Update local state
             const previousSize = completedTasks.size;
             completedTasks.clear();
             snapshot.forEach((doc) => {
-                if (doc.data().completed) {
-                    completedTasks.add(doc.id);
-                }
+                if (doc.data().completed) completedTasks.add(doc.id);
             });
             
-            // Only re-render if something actually changed
             if (completedTasks.size !== previousSize || snapshot.docChanges().length > 0) {
                 renderTasks();
             }
@@ -518,7 +426,6 @@ function setupFirebaseListener() {
     }
 }
 
-// Setup checkbox event listeners
 function setupCheckboxListeners() {
     document.querySelectorAll('.task-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', async (e) => {
@@ -526,7 +433,6 @@ function setupCheckboxListeners() {
             const taskCard = e.target.closest('.task-card');
             const isChecked = e.target.checked;
             
-            // Update local state immediately for responsive UI
             if (isChecked) {
                 completedTasks.add(taskId);
                 taskCard.classList.add('completed');
@@ -535,16 +441,12 @@ function setupCheckboxListeners() {
                 taskCard.classList.remove('completed');
             }
             
-            // Save to Firebase (only this task)
             await saveTaskStatus(taskId, isChecked);
-            
-            // Re-render to apply smart sorting
             renderTasks();
         });
     });
 }
 
-// Format date to Norwegian format (month and day only - no year for yearly cycle)
 function formatDate(dateString) {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -552,7 +454,6 @@ function formatDate(dateString) {
     return `${day}. ${month.toLowerCase()}`;
 }
 
-// Show error message
 function showError(message) {
     const container = document.getElementById('tasks-container');
     container.innerHTML = `
@@ -562,4 +463,3 @@ function showError(message) {
         </div>
     `;
 }
-

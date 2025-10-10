@@ -1,149 +1,139 @@
-# Årshjul for Tverrkirkelig
+# 🗓️ Tverrkirkelig Årshjul
 
-En enkel statisk nettside som viser årshjulet for Tverrkirkelig organisert etter måned, med filtrering basert på rolle.
+Et statisk årshjul for oppgavehåndtering med automatisk årlig reset og delt sjekkboks-lagring.
 
-## 🎯 Funksjonalitet
+## ✨ Funksjoner
 
-- **Månedsorganisert visning**: Alle oppgaver er organisert etter måned (Januar-Desember + Løpende)
-- **Rollefiltrering**: Filtrer oppgaver basert på hvem som skal gjøre dem:
-  - Styret
-  - Admin
-  - Lokallag
-  - Alle (ingen filter)
-- **Responsivt design**: Fungerer på desktop, tablet og mobil
-- **SOP-lenker**: Direktelenker til Standard Operating Procedures der det er relevant
-- **Tverrkirkelig branding**: Bruker offisielle farger og logo fra tverrkirkelig.no
-- **Delt sjekkboks-lagring**: Firebase Firestore for real-time synkronisering mellom brukere
+- **🗓️ Årshjul-logikk**: Automatisk reset 1. januar hvert år
+- **📋 Sjekkbokser**: Delt på tvers av alle brukere via Firebase
+- **⚠️ Over fristen**: Automatisk seksjon for forsinkede oppgaver
+- **🎯 Rollefiltrering**: Styret, Admin, Lokallag, Alle
+- **📱 Responsivt design**: Fungerer på alle enheter
+- **🔄 Smart sortering**: Forsinkede oppgaver øverst
+- **📄 SOP-lenker**: Direktelenker til Standard Operating Procedures
+
+## 🚀 Deployment
+
+### Kinsta (Anbefalt)
+1. Connect GitHub repository: `Sinfjell/tverrkirkelig-arshjul`
+2. **Root directory**: `/` (tom)
+3. **Build command**: `None`
+4. **Publish directory**: `/` (tom)
+5. **Index file**: `index.html`
+6. **Error file**: `404.html`
+
+### Plesk
+1. **Git Deployment**: Legg til repository URL
+2. **Document Root**: `/httpdocs`
+3. **Automatic deployment**: Aktiver
+
+### Andre plattformer
+- **Netlify**: Drag & drop `index.html`
+- **Vercel**: Connect GitHub repository
+- **GitHub Pages**: Enable Pages i repository settings
+
+## 🔥 Firebase Setup
+
+1. **Opprett Firebase-prosjekt**: https://console.firebase.google.com
+2. **Aktiver Firestore Database** i test mode
+3. **Kopier konfigurasjon** til `index.html` (linje 50-57)
+4. **Test**: Åpne siden og sjekk Developer Console
 
 ## 📁 Prosjektstruktur
 
 ```
-arshjul-tverr/
-├── index.html          # Hovedside med struktur og Firebase SDK
-├── styles.css          # Styling med Tverrkirkelig farger
-├── script.js           # JavaScript for filtrering, rendering og Firebase
+├── index.html          # Hovedside
+├── styles.css          # Styling
+├── script.js           # JavaScript logikk
+├── 404.html            # Error page
 ├── data/
 │   └── tasks.json      # Oppgavedata
-├── firebase-config.js  # Firebase konfigurasjon (eksempel)
-├── FIREBASE-SETUP.md   # Detaljert Firebase oppsett-guide
 └── README.md           # Denne filen
 ```
 
-## 🎨 Fargepalett (fra tverrkirkelig.no)
+## 🛠️ Utvikling
 
-- **Primær blå**: #21428c
-- **Sekundær blå**: #58bcea
-- **Mørk grå**: #3a3a3a
-- **Grå**: #4B4F58
-- **Hvit**: #ffffff
-- **Lys grå**: #f9f9f9
-- **Accent turkis**: #75c7ac
-- **Grønn**: #60ba45
+### Lokal testing
+```bash
+# Python
+python3 -m http.server 8000
 
-## 📝 Datastruktur
+# Node.js
+npx http-server
 
-Oppgaver lagres i `data/tasks.json` med følgende struktur:
+# Åpne: http://localhost:8000
+```
 
+### Endre oppgaver
+Rediger `data/tasks.json`:
 ```json
 {
   "id": "unique-id",
   "taskName": "Oppgavenavn",
   "role": "Styret|Admin|Lokallag",
-  "month": 1-12 eller null,
-  "monthName": "Månedsnavn",
-  "quarter": "Q1|Q2|Q3|Q4",
-  "tags": ["tag1", "tag2"],
-  "sopUrl": "URL til SOP",
+  "month": 1-12,
+  "monthName": "Januar",
+  "tags": ["Tag1", "Tag2"],
+  "sopUrl": "https://...",
   "assignees": ["Navn 1", "Navn 2"],
   "dueDate": "YYYY-MM-DD"
 }
 ```
 
-## 🔥 Firebase Setup (Anbefalt)
+## 🔄 Årshjul-logikk
 
-For delt sjekkboks-lagring på tvers av brukere:
+### Automatisk reset 1. januar
+- Alle oppgaver blir "unchecked"
+- Frist flyttes tilbake til inneværende år
+- Fresh start for det nye året
 
-1. **Følg `FIREBASE-SETUP.md`** for detaljert guide
-2. **Opprett Firebase-prosjekt** (gratis)
-3. **Oppdater konfigurasjon** i `index.html`
-4. **Test lokalt** - alle brukere ser samme sjekkboks-status!
+### Smart frist-håndtering
+- **Ferdigstilt oppgave**: Frist flyttes til neste år
+- **Avhakt oppgave**: Frist flyttes til inneværende år
+- **Over fristen**: Viser forsinkede oppgaver øverst
 
-**Uten Firebase:** Sjekkbokser lagres lokalt per bruker (localStorage fallback)
+### UI-enkelhet
+- Ingen år vises (kun måned og dato)
+- Årshjul-logikk håndteres automatisk
+- Fokus på det som er relevant
 
-## 🚀 Deployment
+## 🎨 Branding
 
-### Lokal testing
+- **Farger**: Fra tverrkirkelig.no
+- **Logo**: Offisiell Tverrkirkelig logo
+- **Font**: System fonts for optimal ytelse
 
-1. Åpne `index.html` direkte i en nettleser
-2. Eller bruk en lokal webserver:
-   ```bash
-   # Med Python 3
-   python3 -m http.server 8001
-   
-   # Med Node.js (npx)
-   npx http-server
-   ```
+## 📊 Ytelse
 
-### Hosting
-
-Siden er statisk og kan hostes hvor som helst:
-
-- **GitHub Pages**: Push til GitHub og aktiver Pages
-- **Netlify**: Dra og slipp mappen til Netlify
-- **Vercel**: Deploy med `vercel --prod`
-- **Vanlig webserver**: Last opp alle filer til server
-
-For subdomain `arshjul.tverrkirkelig.no`:
-1. Host filene på en webserver
-2. Sett opp en CNAME record i DNS som peker til serveradressen
-3. Konfigurer webserveren til å svare på dette domenet
+- **Størrelse**: < 100 KB total
+- **Loading**: < 1 sekund
+- **Offline**: Fungerer med cached filer
+- **Mobile**: Optimalisert for alle enheter
 
 ## 🔧 Vedlikehold
 
-### Legge til nye oppgaver
+### Oppdatere oppgaver
+```bash
+# Rediger tasks.json
+vim data/tasks.json
 
-1. Åpne `data/tasks.json`
-2. Legg til et nytt objekt i array:
-   ```json
-   {
-     "id": "unique-id",
-     "taskName": "Ny oppgave",
-     "role": "Admin",
-     "month": 3,
-     "monthName": "Mars",
-     "quarter": "Q1",
-     "tags": [],
-     "sopUrl": "",
-     "assignees": ["Navn"],
-     "dueDate": "2026-03-15"
-   }
-   ```
-3. Lagre filen - endringene vises automatisk
+# Commit og deploy
+git add data/tasks.json
+git commit -m "Oppdatert oppgaver"
+git push origin main
+```
 
-### Oppdatere eksisterende oppgaver
+### Firebase vedlikehold
+- **Gratis tier**: 50K reads, 20K writes per dag
+- **Backup**: Automatisk i Firebase
+- **Monitoring**: Firebase Console
 
-1. Finn oppgaven i `data/tasks.json`
-2. Endre feltene du ønsker
-3. Lagre filen
+## 🆘 Support
 
-### Slette oppgaver
+- **GitHub Issues**: https://github.com/Sinfjell/tverrkirkelig-arshjul/issues
+- **Firebase Console**: https://console.firebase.google.com
+- **Tverrkirkelig**: Kontakt IT-ansvarlig
 
-1. Finn oppgaven i `data/tasks.json`
-2. Fjern hele objektet fra arrayet
-3. Lagre filen
+---
 
-## 🌐 Nettleserstøtte
-
-- Chrome/Edge (moderne versjoner)
-- Firefox (moderne versjoner)
-- Safari (moderne versjoner)
-- Mobile browsers (iOS Safari, Chrome Android)
-
-## 📄 Lisens
-
-© 2025 Tverrkirkelig. Alle rettigheter reservert.
-
-## 👥 Kontakt
-
-For spørsmål eller support, kontakt Tverrkirkelig administrasjon.
-
+**🎉 Et robust årshjul som fungerer år etter år!**
