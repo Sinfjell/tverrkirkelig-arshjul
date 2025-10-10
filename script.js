@@ -36,8 +36,8 @@ async function loadCompletedTasks() {
     }
 }
 
-// Save completed tasks to Firebase
-async function saveCompletedTasks() {
+// Save single task status to Firebase
+async function saveTaskStatus(taskId, completed) {
     try {
         // Fallback to localStorage if Firebase not available
         if (!window.db) {
@@ -45,27 +45,25 @@ async function saveCompletedTasks() {
             return;
         }
         
-        // Save to Firebase
-        const batch = [];
-        const allTasks = await getAllTaskIds();
+        // Save single task to Firebase
+        const taskRef = doc(window.db, 'taskStatus', taskId);
+        await setDoc(taskRef, {
+            completed: completed,
+            lastUpdated: new Date(),
+            taskId: taskId
+        }, { merge: true });
         
-        for (const taskId of allTasks) {
-            const isCompleted = completedTasks.has(taskId);
-            const taskRef = doc(window.db, 'taskStatus', taskId);
-            
-            await setDoc(taskRef, {
-                completed: isCompleted,
-                lastUpdated: new Date(),
-                taskId: taskId
-            }, { merge: true });
-        }
-        
-        console.log('Saved completed tasks to Firebase:', completedTasks.size);
+        console.log(`Saved task ${taskId} to Firebase: ${completed}`);
     } catch (error) {
-        console.error('Error saving completed tasks:', error);
+        console.error('Error saving task status:', error);
         // Fallback to localStorage
         localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
     }
+}
+
+// Legacy function for localStorage fallback
+async function saveCompletedTasks() {
+    localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
 }
 
 // Get all task IDs for Firebase sync
@@ -355,10 +353,20 @@ function setupFirebaseListener() {
     
     try {
         const q = query(collection(window.db, 'taskStatus'));
+        let isFirstLoad = true;
+        
         onSnapshot(q, (snapshot) => {
-            console.log('Firebase data changed, updating UI...');
+            // Skip first load since we already loaded data
+            if (isFirstLoad) {
+                isFirstLoad = false;
+                console.log('Firebase listener initialized');
+                return;
+            }
+            
+            console.log('Firebase data changed from another user, updating UI...');
             
             // Update local state
+            const previousSize = completedTasks.size;
             completedTasks.clear();
             snapshot.forEach((doc) => {
                 if (doc.data().completed) {
@@ -366,8 +374,10 @@ function setupFirebaseListener() {
                 }
             });
             
-            // Re-render to show updated status
-            renderTasks();
+            // Only re-render if something actually changed
+            if (completedTasks.size !== previousSize || snapshot.docChanges().length > 0) {
+                renderTasks();
+            }
         });
     } catch (error) {
         console.error('Error setting up Firebase listener:', error);
@@ -391,8 +401,8 @@ function setupCheckboxListeners() {
                 taskCard.classList.remove('completed');
             }
             
-            // Save to Firebase (will trigger real-time update)
-            await saveCompletedTasks();
+            // Save to Firebase (only this task)
+            await saveTaskStatus(taskId, isChecked);
             
             // Re-render to apply smart sorting
             renderTasks();
