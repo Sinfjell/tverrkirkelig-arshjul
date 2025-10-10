@@ -70,10 +70,14 @@ async function saveTaskStatus(taskId, completed) {
         // If completing an overdue task, move it to next year
         if (completed && task && isTaskOverdue(task)) {
             moveTaskToNextYear(taskId);
+            // Store completion year for rolling year logic
+            localStorage.setItem(`task_${taskId}_completed_year`, new Date().getFullYear().toString());
         }
         // If unchecking a task, move it back to current year
         else if (!completed && task) {
             moveTaskToCurrentYear(taskId);
+            // Remove completion year tracking
+            localStorage.removeItem(`task_${taskId}_completed_year`);
         }
         
         // Fallback to localStorage if Firebase not available
@@ -115,10 +119,37 @@ const monthNames = [
     'Juli', 'August', 'September', 'Oktober', 'November', 'Desember', 'Løpende'
 ];
 
+// Check for tasks that should be reset for new year cycle
+function checkForYearlyReset() {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = getCurrentMonth();
+    let resetCount = 0;
+    
+    allTasks.forEach(task => {
+        if (task.month === currentMonth && completedTasks.has(task.id)) {
+            // Check if task was completed in previous year
+            const lastCompleted = localStorage.getItem(`task_${task.id}_completed_year`);
+            
+            if (lastCompleted && parseInt(lastCompleted) < currentYear) {
+                completedTasks.delete(task.id);
+                localStorage.removeItem(`task_${task.id}_completed_year`);
+                resetCount++;
+                console.log(`Auto-reset task ${task.id} for new year cycle`);
+            }
+        }
+    });
+    
+    if (resetCount > 0) {
+        console.log(`Auto-reset ${resetCount} tasks for ${currentMonth} ${currentYear}`);
+        saveCompletedTasks(); // Save the reset state
+    }
+}
+
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTasks();
     await loadCompletedTasks();
+    checkForYearlyReset(); // Check for yearly resets
     setupFilterButtons();
     renderTasks();
     setupFirebaseListener();
