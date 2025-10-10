@@ -36,9 +36,29 @@ async function loadCompletedTasks() {
     }
 }
 
+// Move task to next year when completed
+function moveTaskToNextYear(taskId) {
+    const task = allTasks.find(t => t.id === taskId);
+    if (!task || !task.dueDate) return;
+    
+    const dueDate = new Date(task.dueDate);
+    dueDate.setFullYear(dueDate.getFullYear() + 1);
+    task.dueDate = dueDate.toISOString().split('T')[0];
+    
+    console.log(`Moved task ${taskId} to next year: ${task.dueDate}`);
+}
+
 // Save single task status to Firebase
 async function saveTaskStatus(taskId, completed) {
     try {
+        // If completing an overdue task, move it to next year
+        if (completed) {
+            const task = allTasks.find(t => t.id === taskId);
+            if (task && isTaskOverdue(task)) {
+                moveTaskToNextYear(taskId);
+            }
+        }
+        
         // Fallback to localStorage if Firebase not available
         if (!window.db) {
             localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
@@ -87,6 +107,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupFirebaseListener();
 });
 
+// Normalize task dates to current/next year based on month
+function normalizeDateToCurrentYear(task) {
+    if (!task.dueDate) return task;
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth(); // 0-11
+    
+    const dueDate = new Date(task.dueDate);
+    const taskMonth = task.month - 1; // Convert 1-12 to 0-11
+    
+    // If task month is before current month, it should be next year
+    // If task month is current or after, it should be this year
+    let targetYear = currentYear;
+    if (taskMonth < currentMonth) {
+        targetYear = currentYear + 1;
+    }
+    
+    // Update the due date with the correct year
+    dueDate.setFullYear(targetYear);
+    task.dueDate = dueDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    
+    return task;
+}
+
 // Load tasks from JSON file
 async function loadTasks() {
     try {
@@ -94,7 +139,12 @@ async function loadTasks() {
         if (!response.ok) {
             throw new Error('Could not load tasks');
         }
-        allTasks = await response.json();
+        let tasks = await response.json();
+        
+        // Normalize all task dates to current/next year
+        allTasks = tasks.map(task => normalizeDateToCurrentYear(task));
+        
+        console.log('Tasks loaded and normalized to current year cycle');
     } catch (error) {
         console.error('Error loading tasks:', error);
         showError('Kunne ikke laste oppgaver. Vennligst prøv igjen senere.');
@@ -246,6 +296,25 @@ function organizeTasksByMonth(tasks) {
     return tasksByMonth;
 }
 
+// Get overdue tasks (unchecked tasks that are past their due date)
+function getOverdueTasks(tasks) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return tasks.filter(task => {
+        if (completedTasks.has(task.id)) return false; // Skip completed tasks
+        if (!task.dueDate) return false; // Skip tasks without due date
+        
+        const dueDate = new Date(task.dueDate);
+        dueDate.setHours(0, 0, 0, 0);
+        
+        return dueDate < today;
+    }).sort((a, b) => {
+        // Sort by due date, oldest first
+        return new Date(a.dueDate) - new Date(b.dueDate);
+    });
+}
+
 // Render all tasks
 function renderTasks() {
     const container = document.getElementById('tasks-container');
@@ -261,9 +330,23 @@ function renderTasks() {
         return;
     }
     
+    let html = '';
+    
+    // Render "Over fristen" section at the top
+    const overdueTasks = getOverdueTasks(filteredTasks);
+    if (overdueTasks.length > 0) {
+        html += '<div class="overdue-section">';
+        html += '<h2 class="overdue-title">⚠️ Over fristen</h2>';
+        html += '<div class="month-tasks">';
+        overdueTasks.forEach(task => {
+            html += renderTaskCard(task);
+        });
+        html += '</div></div>';
+    }
+    
+    // Render regular month sections
     const tasksByMonth = organizeTasksByMonth(filteredTasks);
     const sortedMonths = getSortedMonthOrder();
-    let html = '';
     
     // Render months in sorted order (starting from current month)
     sortedMonths.forEach(month => {
@@ -313,7 +396,7 @@ function renderTaskCard(task) {
     
     if (task.dueDate) {
         const dateStr = formatDate(task.dueDate);
-        const overdueLabel = needsAttention ? ' <span class="overdue-badge">⚠️ Må følges opp</span>' : '';
+        const overdueLabel = needsAttention ? ' <span class="overdue-badge">⚠️ Over fristen</span>' : '';
         infoParts.push(`<strong>Frist:</strong> ${dateStr}${overdueLabel}`);
     }
     

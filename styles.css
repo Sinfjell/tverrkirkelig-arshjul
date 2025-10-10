@@ -116,6 +116,27 @@ body {
     gap: 20px;
 }
 
+/* Over fristen section */
+.overdue-section {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+    border-left: 5px solid #ff9800;
+    animation: fadeIn 0.4s ease;
+}
+
+.overdue-title {
+    color: #d84315;
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .month-section {
     background-color: var(--color-white);
     border-radius: 6px;
