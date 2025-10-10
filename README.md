@@ -13,16 +13,19 @@ En enkel statisk nettside som viser årshjulet for Tverrkirkelig organisert ette
 - **Responsivt design**: Fungerer på desktop, tablet og mobil
 - **SOP-lenker**: Direktelenker til Standard Operating Procedures der det er relevant
 - **Tverrkirkelig branding**: Bruker offisielle farger og logo fra tverrkirkelig.no
+- **Delt sjekkboks-lagring**: Firebase Firestore for real-time synkronisering mellom brukere
 
 ## 📁 Prosjektstruktur
 
 ```
 arshjul-tverr/
-├── index.html          # Hovedside med struktur
+├── index.html          # Hovedside med struktur og Firebase SDK
 ├── styles.css          # Styling med Tverrkirkelig farger
-├── script.js           # JavaScript for filtrering og rendering
+├── script.js           # JavaScript for filtrering, rendering og Firebase
 ├── data/
 │   └── tasks.json      # Oppgavedata
+├── firebase-config.js  # Firebase konfigurasjon (eksempel)
+├── FIREBASE-SETUP.md   # Detaljert Firebase oppsett-guide
 └── README.md           # Denne filen
 ```
 
@@ -56,6 +59,17 @@ Oppgaver lagres i `data/tasks.json` med følgende struktur:
 }
 ```
 
+## 🔥 Firebase Setup (Anbefalt)
+
+For delt sjekkboks-lagring på tvers av brukere:
+
+1. **Følg `FIREBASE-SETUP.md`** for detaljert guide
+2. **Opprett Firebase-prosjekt** (gratis)
+3. **Oppdater konfigurasjon** i `index.html`
+4. **Test lokalt** - alle brukere ser samme sjekkboks-status!
+
+**Uten Firebase:** Sjekkbokser lagres lokalt per bruker (localStorage fallback)
+
 ## 🚀 Deployment
 
 ### Lokal testing
@@ -64,7 +78,7 @@ Oppgaver lagres i `data/tasks.json` med følgende struktur:
 2. Eller bruk en lokal webserver:
    ```bash
    # Med Python 3
-   python3 -m http.server 8000
+   python3 -m http.server 8001
    
    # Med Node.js (npx)
    npx http-server

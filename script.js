@@ -3,17 +3,75 @@ let allTasks = [];
 let currentFilter = 'all';
 let completedTasks = new Set(); // Track completed tasks
 
-// Load completed tasks from localStorage
-function loadCompletedTasks() {
-    const saved = localStorage.getItem('completedTasks');
-    if (saved) {
-        completedTasks = new Set(JSON.parse(saved));
+// Load completed tasks from Firebase
+async function loadCompletedTasks() {
+    try {
+        // Fallback to localStorage if Firebase not available
+        if (!window.db) {
+            const saved = localStorage.getItem('completedTasks');
+            if (saved) {
+                completedTasks = new Set(JSON.parse(saved));
+            }
+            return;
+        }
+        
+        // Load from Firebase
+        const snapshot = await getDocs(collection(window.db, 'taskStatus'));
+        completedTasks.clear();
+        
+        snapshot.forEach((doc) => {
+            if (doc.data().completed) {
+                completedTasks.add(doc.id);
+            }
+        });
+        
+        console.log('Loaded completed tasks from Firebase:', completedTasks.size);
+    } catch (error) {
+        console.error('Error loading completed tasks:', error);
+        // Fallback to localStorage
+        const saved = localStorage.getItem('completedTasks');
+        if (saved) {
+            completedTasks = new Set(JSON.parse(saved));
+        }
     }
 }
 
-// Save completed tasks to localStorage
-function saveCompletedTasks() {
-    localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
+// Save completed tasks to Firebase
+async function saveCompletedTasks() {
+    try {
+        // Fallback to localStorage if Firebase not available
+        if (!window.db) {
+            localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
+            return;
+        }
+        
+        // Save to Firebase
+        const batch = [];
+        const allTasks = await getAllTaskIds();
+        
+        for (const taskId of allTasks) {
+            const isCompleted = completedTasks.has(taskId);
+            const taskRef = doc(window.db, 'taskStatus', taskId);
+            
+            await setDoc(taskRef, {
+                completed: isCompleted,
+                lastUpdated: new Date(),
+                taskId: taskId
+            }, { merge: true });
+        }
+        
+        console.log('Saved completed tasks to Firebase:', completedTasks.size);
+    } catch (error) {
+        console.error('Error saving completed tasks:', error);
+        // Fallback to localStorage
+        localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
+    }
+}
+
+// Get all task IDs for Firebase sync
+async function getAllTaskIds() {
+    const taskIds = allTasks.map(task => task.id);
+    return taskIds;
 }
 
 // Month names in Norwegian
@@ -24,10 +82,11 @@ const monthNames = [
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    loadCompletedTasks();
     await loadTasks();
+    await loadCompletedTasks();
     setupFilterButtons();
     renderTasks();
+    setupFirebaseListener();
 });
 
 // Load tasks from JSON file
@@ -290,14 +349,41 @@ function renderTaskCard(task) {
     `;
 }
 
+// Setup Firebase real-time listener
+function setupFirebaseListener() {
+    if (!window.db) return;
+    
+    try {
+        const q = query(collection(window.db, 'taskStatus'));
+        onSnapshot(q, (snapshot) => {
+            console.log('Firebase data changed, updating UI...');
+            
+            // Update local state
+            completedTasks.clear();
+            snapshot.forEach((doc) => {
+                if (doc.data().completed) {
+                    completedTasks.add(doc.id);
+                }
+            });
+            
+            // Re-render to show updated status
+            renderTasks();
+        });
+    } catch (error) {
+        console.error('Error setting up Firebase listener:', error);
+    }
+}
+
 // Setup checkbox event listeners
 function setupCheckboxListeners() {
     document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', (e) => {
+        checkbox.addEventListener('change', async (e) => {
             const taskId = e.target.dataset.taskId;
             const taskCard = e.target.closest('.task-card');
+            const isChecked = e.target.checked;
             
-            if (e.target.checked) {
+            // Update local state immediately for responsive UI
+            if (isChecked) {
                 completedTasks.add(taskId);
                 taskCard.classList.add('completed');
             } else {
@@ -305,7 +391,8 @@ function setupCheckboxListeners() {
                 taskCard.classList.remove('completed');
             }
             
-            saveCompletedTasks();
+            // Save to Firebase (will trigger real-time update)
+            await saveCompletedTasks();
             
             // Re-render to apply smart sorting
             renderTasks();
