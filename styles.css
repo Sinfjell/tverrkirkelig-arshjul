@@ -284,6 +284,24 @@ body {
     text-decoration: line-through;
 }
 
+/* Overdue task styling */
+.task-card.overdue {
+    background-color: #fff3cd;
+    border-left-color: #ff9800 !important;
+    border-left-width: 4px;
+}
+
+.overdue-badge {
+    display: inline-block;
+    background-color: #ff9800;
+    color: var(--color-white);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
 /* Footer */
 .site-footer {
     background-color: var(--color-dark);

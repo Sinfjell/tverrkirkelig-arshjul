@@ -102,6 +102,49 @@ function getSortedMonthOrder() {
     return order;
 }
 
+// Check if a task is overdue
+function isTaskOverdue(task) {
+    if (!task.dueDate) return false;
+    const dueDate = new Date(task.dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day
+    return dueDate < today;
+}
+
+// Sort tasks within a month (smart sorting based on completion and due date)
+function sortTasksInMonth(tasks) {
+    return tasks.sort((a, b) => {
+        const aCompleted = completedTasks.has(a.id);
+        const bCompleted = completedTasks.has(b.id);
+        const aOverdue = isTaskOverdue(a);
+        const bOverdue = isTaskOverdue(b);
+        
+        // Priority 1: Unchecked overdue tasks (top)
+        if (!aCompleted && aOverdue && (!bCompleted && bOverdue)) return 0;
+        if (!aCompleted && aOverdue) return -1;
+        if (!bCompleted && bOverdue) return 1;
+        
+        // Priority 2: Unchecked non-overdue tasks
+        if (!aCompleted && !aOverdue && (!bCompleted && !bOverdue)) {
+            // Sort by due date if both have dates
+            if (a.dueDate && b.dueDate) {
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            }
+            return 0;
+        }
+        if (!aCompleted && !aOverdue) return -1;
+        if (!bCompleted && !bOverdue) return 1;
+        
+        // Priority 3: Checked non-overdue tasks
+        if (aCompleted && !aOverdue && (bCompleted && !bOverdue)) return 0;
+        if (aCompleted && !aOverdue) return -1;
+        if (bCompleted && !bOverdue) return 1;
+        
+        // Priority 4: Checked overdue tasks (bottom)
+        return 0;
+    });
+}
+
 // Organize tasks by month
 function organizeTasksByMonth(tasks) {
     const tasksByMonth = {};
@@ -119,6 +162,11 @@ function organizeTasksByMonth(tasks) {
         } else {
             tasksByMonth[task.month].push(task);
         }
+    });
+    
+    // Sort tasks within each month
+    Object.keys(tasksByMonth).forEach(month => {
+        tasksByMonth[month] = sortTasksInMonth(tasksByMonth[month]);
     });
     
     return tasksByMonth;
@@ -178,6 +226,7 @@ function renderTaskCard(task) {
     const roleClass = task.role ? task.role.toLowerCase() : '';
     const roleBadge = task.role ? `<span class="role-badge ${roleClass}">${task.role}</span>` : '';
     const isCompleted = completedTasks.has(task.id);
+    const isOverdue = isTaskOverdue(task);
     
     // Build single-line info
     const infoParts = [];
@@ -187,7 +236,9 @@ function renderTaskCard(task) {
     }
     
     if (task.dueDate) {
-        infoParts.push(`<strong>Frist:</strong> ${formatDate(task.dueDate)}`);
+        const dateStr = formatDate(task.dueDate);
+        const overdueLabel = !isCompleted && isOverdue ? ' <span class="overdue-badge">⚠️ Forfalt</span>' : '';
+        infoParts.push(`<strong>Frist:</strong> ${dateStr}${overdueLabel}`);
     }
     
     const infoLine = infoParts.length > 0 ? `<div class="task-info-line">${infoParts.join(' • ')}</div>` : '';
@@ -196,8 +247,15 @@ function renderTaskCard(task) {
         ? `<a href="${task.sopUrl}" target="_blank" rel="noopener noreferrer" class="sop-link">📄 SOP</a>`
         : '';
     
+    const cardClasses = [
+        'task-card',
+        `role-${roleClass}`,
+        isCompleted ? 'completed' : '',
+        !isCompleted && isOverdue ? 'overdue' : ''
+    ].filter(Boolean).join(' ');
+    
     return `
-        <div class="task-card role-${roleClass} ${isCompleted ? 'completed' : ''}" data-role="${task.role || 'all'}" data-task-id="${task.id}">
+        <div class="${cardClasses}" data-role="${task.role || 'all'}" data-task-id="${task.id}">
             <div class="task-header">
                 <div class="task-checkbox-wrapper">
                     <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${isCompleted ? 'checked' : ''}>
@@ -229,6 +287,9 @@ function setupCheckboxListeners() {
             }
             
             saveCompletedTasks();
+            
+            // Re-render to apply smart sorting
+            renderTasks();
         });
     });
 }
