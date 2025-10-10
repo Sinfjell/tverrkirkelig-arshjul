@@ -96,8 +96,7 @@ function getSortedMonthOrder() {
         order.push(i);
     }
     
-    // Add 'lopende' at the end
-    order.push('lopende');
+    // Note: Removed 'lopende' section as requested
     
     return order;
 }
@@ -113,7 +112,6 @@ function isTaskOverdue(task) {
 
 // Check if a month is before current month
 function isMonthBeforeCurrent(month) {
-    if (month === 'lopende') return false;
     const currentMonth = getCurrentMonth();
     return month < currentMonth;
 }
@@ -175,13 +173,10 @@ function organizeTasksByMonth(tasks) {
     for (let i = 1; i <= 12; i++) {
         tasksByMonth[i] = [];
     }
-    tasksByMonth['lopende'] = []; // For tasks without due date
     
-    // Group tasks by month
+    // Group tasks by month (skip tasks without month)
     tasks.forEach(task => {
-        if (task.month === null) {
-            tasksByMonth['lopende'].push(task);
-        } else {
+        if (task.month !== null) {
             tasksByMonth[task.month].push(task);
         }
     });
@@ -218,7 +213,7 @@ function renderTasks() {
         const monthTasks = tasksByMonth[month];
         
         if (monthTasks && monthTasks.length > 0) {
-            const monthName = month === 'lopende' ? 'Løpende' : monthNames[month - 1];
+            const monthName = monthNames[month - 1];
             html += renderMonthSection(month, monthName, monthTasks);
         }
     });
