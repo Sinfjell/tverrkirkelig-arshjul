@@ -5,8 +5,6 @@
     "role": "Styret",
     "month": 2,
     "monthName": "Februar",
-    "quarter": "Q1",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Sindre Fjellestad", "Anders Myklebust"],
     "dueDate": "2023-02-11"
@@ -17,8 +15,6 @@
     "role": "Styret",
     "month": 2,
     "monthName": "Februar",
-    "quarter": "Q1",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Viktor Kleppan", "Anders Myklebust"],
     "dueDate": "2023-02-12"
@@ -29,8 +25,6 @@
     "role": "Admin",
     "month": 2,
     "monthName": "Februar",
-    "quarter": "Q1",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Jonatan Sindholt Syvertsen"],
     "dueDate": "2023-02-15"
@@ -41,8 +35,6 @@
     "role": "",
     "month": 1,
     "monthName": "Januar",
-    "quarter": "Q1",
-    "tags": [],
     "sopUrl": "",
     "assignees": [],
     "dueDate": "2024-01-31"
@@ -53,8 +45,6 @@
     "role": "Lokallag",
     "month": 1,
     "monthName": "Januar",
-    "quarter": "Q1",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Mathias Edvardsen"],
     "dueDate": "2026-01-31"
@@ -113,8 +103,6 @@
     "role": "Admin",
     "month": 4,
     "monthName": "April",
-    "quarter": "Q1",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Svein Bakke"],
     "dueDate": "2026-04-30"
@@ -137,8 +125,6 @@
     "role": "",
     "month": 6,
     "monthName": "Juni",
-    "quarter": "Q2",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Mathias Edvardsen"],
     "dueDate": "2025-06-16"
@@ -173,8 +159,6 @@
     "role": "",
     "month": 9,
     "monthName": "September",
-    "quarter": "Q3",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Mathias Edvardsen"],
     "dueDate": "2024-09-20"
@@ -185,8 +169,6 @@
     "role": "Lokallag",
     "month": 9,
     "monthName": "September",
-    "quarter": "Q4",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Mathias Edvardsen", "Johannes Bjørkholt"],
     "dueDate": "2025-09-15"
@@ -209,8 +191,6 @@
     "role": "Styret",
     "month": 10,
     "monthName": "Oktober",
-    "quarter": "Q2",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Sindre Fjellestad"],
     "dueDate": "2023-10-01"
@@ -221,8 +201,6 @@
     "role": "",
     "month": 10,
     "monthName": "Oktober",
-    "quarter": "Q2",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Sindre Fjellestad"],
     "dueDate": "2022-10-31"
@@ -233,8 +211,6 @@
     "role": "",
     "month": 12,
     "monthName": "Desember",
-    "quarter": "Q4",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Mathias Edvardsen", "Johannes Bjørkholt"],
     "dueDate": "2025-12-15"
@@ -245,8 +221,6 @@
     "role": "Styret",
     "month": 12,
     "monthName": "Desember",
-    "quarter": "Q4",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Sindre Fjellestad"],
     "dueDate": "2023-12-08"
@@ -257,8 +231,6 @@
     "role": "Admin",
     "month": 12,
     "monthName": "Desember",
-    "quarter": "Q4",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Sindre Fjellestad"],
     "dueDate": "2023-12-22"
@@ -269,8 +241,6 @@
     "role": "Admin",
     "month": 12,
     "monthName": "Desember",
-    "quarter": "Q4",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Svein Bakke", "Johannes Bjørkholt"],
     "dueDate": "2025-12-31"
@@ -281,8 +251,6 @@
     "role": "",
     "month": 12,
     "monthName": "Desember",
-    "quarter": "Q4",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Mathias Edvardsen"],
     "dueDate": "2024-12-31"
@@ -293,8 +261,6 @@
     "role": "",
     "month": null,
     "monthName": "Løpende",
-    "quarter": "Q1",
-    "tags": [],
     "sopUrl": "",
     "assignees": ["Anders Myklebust", "Viktor Kleppan"],
     "dueDate": null

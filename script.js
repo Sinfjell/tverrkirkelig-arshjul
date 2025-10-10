@@ -382,7 +382,7 @@ function renderTaskCard(task) {
     const isCompleted = completedTasks.has(task.id);
     const isPastMonth = isMonthBeforeCurrent(task.month);
     const isOverdue = isTaskOverdue(task);
-    const needsAttention = (isPastMonth && !isCompleted) || (isOverdue && !isCompleted);
+    const needsAttention = !isCompleted && isOverdue;
 
     const infoParts = [];
 
