@@ -32,16 +32,34 @@ async function loadCompletedTasks() {
     }
 }
 
+// Get effective due date (stored override or original from JSON)
+function getTaskDueDate(task) {
+    const stored = localStorage.getItem(`task_${task.id}_dueDate`);
+    return stored || task.dueDate;
+}
+
+// Set task due date in localStorage
+function setTaskDueDate(taskId, dueDate) {
+    localStorage.setItem(`task_${taskId}_dueDate`, dueDate);
+}
+
+// Remove task due date override (revert to JSON original)
+function removeTaskDueDateOverride(taskId) {
+    localStorage.removeItem(`task_${task.id}_dueDate`);
+}
+
 // Move task to next year when completed
 function moveTaskToNextYear(taskId) {
     const task = allTasks.find(t => t.id === taskId);
     if (!task || !task.dueDate) return;
     
-    const dueDate = new Date(task.dueDate);
+    const currentDueDate = getTaskDueDate(task);
+    const dueDate = new Date(currentDueDate);
     dueDate.setFullYear(dueDate.getFullYear() + 1);
-    task.dueDate = dueDate.toISOString().split('T')[0];
+    const newDueDate = dueDate.toISOString().split('T')[0];
     
-    console.log(`Moved task ${taskId} to next year: ${task.dueDate}`);
+    setTaskDueDate(taskId, newDueDate);
+    console.log(`Moved task ${taskId} to next year: ${newDueDate}`);
 }
 
 // Move task back to current year when unchecked
@@ -51,11 +69,12 @@ function moveTaskToCurrentYear(taskId) {
     
     const today = new Date();
     const currentYear = today.getFullYear();
-    const dueDate = new Date(task.dueDate);
+    const dueDate = new Date(task.dueDate); // Use original JSON date
     dueDate.setFullYear(currentYear);
-    task.dueDate = dueDate.toISOString().split('T')[0];
+    const newDueDate = dueDate.toISOString().split('T')[0];
     
-    console.log(`Moved task ${taskId} back to current year: ${task.dueDate}`);
+    setTaskDueDate(taskId, newDueDate);
+    console.log(`Moved task ${taskId} back to current year: ${newDueDate}`);
 }
 
 // Save single task status to Firebase
@@ -110,6 +129,7 @@ function checkForNewYearReset() {
         
         allTasks.forEach(task => {
             localStorage.removeItem(`task_${task.id}_completed_year`);
+            localStorage.removeItem(`task_${task.id}_dueDate`); // Clear due date overrides
         });
         
         localStorage.setItem('lastNewYearReset', currentYear.toString());
@@ -196,11 +216,12 @@ function getSortedMonthOrder() {
 }
 
 function isTaskOverdue(task) {
-    if (!task.dueDate) return false;
+    const effectiveDueDate = getTaskDueDate(task);
+    if (!effectiveDueDate) return false;
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const dueDate = new Date(task.dueDate);
+    const dueDate = new Date(effectiveDueDate);
     dueDate.setHours(0, 0, 0, 0);
     
     return dueDate < today;
@@ -221,8 +242,10 @@ function sortTasksInMonth(tasks, monthId) {
         const bOverdue = isPastMonth || isTaskOverdue(b);
         
         if (!aCompleted && aOverdue && (!bCompleted && bOverdue)) {
-            if (a.dueDate && b.dueDate) {
-                return new Date(a.dueDate) - new Date(b.dueDate);
+            const aDueDate = getTaskDueDate(a);
+            const bDueDate = getTaskDueDate(b);
+            if (aDueDate && bDueDate) {
+                return new Date(aDueDate) - new Date(bDueDate);
             }
             return 0;
         }
@@ -230,8 +253,10 @@ function sortTasksInMonth(tasks, monthId) {
         if (!bCompleted && bOverdue) return 1;
         
         if (!aCompleted && !aOverdue && (!bCompleted && !bOverdue)) {
-            if (a.dueDate && b.dueDate) {
-                return new Date(a.dueDate) - new Date(b.dueDate);
+            const aDueDate = getTaskDueDate(a);
+            const bDueDate = getTaskDueDate(b);
+            if (aDueDate && bDueDate) {
+                return new Date(aDueDate) - new Date(bDueDate);
             }
             return 0;
         }
@@ -243,8 +268,10 @@ function sortTasksInMonth(tasks, monthId) {
         if (bCompleted && !bOverdue) return 1;
         
         if (aCompleted && aOverdue && (bCompleted && bOverdue)) {
-            if (a.dueDate && b.dueDate) {
-                return new Date(b.dueDate) - new Date(a.dueDate);
+            const aDueDate = getTaskDueDate(a);
+            const bDueDate = getTaskDueDate(b);
+            if (aDueDate && bDueDate) {
+                return new Date(bDueDate) - new Date(aDueDate);
             }
             return 0;
         }
@@ -278,14 +305,18 @@ function getOverdueTasks(tasks) {
     
     return tasks.filter(task => {
         if (completedTasks.has(task.id)) return false;
-        if (!task.dueDate) return false;
         
-        const dueDate = new Date(task.dueDate);
+        const effectiveDueDate = getTaskDueDate(task);
+        if (!effectiveDueDate) return false;
+        
+        const dueDate = new Date(effectiveDueDate);
         dueDate.setHours(0, 0, 0, 0);
         
         return dueDate < today;
     }).sort((a, b) => {
-        return new Date(a.dueDate) - new Date(b.dueDate);
+        const aDueDate = getTaskDueDate(a);
+        const bDueDate = getTaskDueDate(b);
+        return new Date(aDueDate) - new Date(bDueDate);
     });
 }
 
@@ -359,8 +390,9 @@ function renderTaskCard(task) {
         infoParts.push(`<strong>Ansvarlig:</strong> ${task.assignees.join(', ')}`);
     }
 
-    if (task.dueDate) {
-        const dateStr = formatDate(task.dueDate);
+    const effectiveDueDate = getTaskDueDate(task);
+    if (effectiveDueDate) {
+        const dateStr = formatDate(effectiveDueDate);
         const overdueLabel = needsAttention ? ' <span class="overdue-badge">⚠️ Over fristen</span>' : '';
         infoParts.push(`<strong>Frist:</strong> ${dateStr}${overdueLabel}`);
     }
