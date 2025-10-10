@@ -119,29 +119,32 @@ const monthNames = [
     'Juli', 'August', 'September', 'Oktober', 'November', 'Desember', 'Løpende'
 ];
 
-// Check for tasks that should be reset for new year cycle
-function checkForYearlyReset() {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = getCurrentMonth();
-    let resetCount = 0;
+// Check for full reset on January 1st (new year cycle)
+function checkForNewYearReset() {
+    const today = new Date();
+    const isNewYear = today.getMonth() === 0 && today.getDate() === 1; // January 1st
+    const currentYear = today.getFullYear();
     
-    allTasks.forEach(task => {
-        if (task.month === currentMonth && completedTasks.has(task.id)) {
-            // Check if task was completed in previous year
-            const lastCompleted = localStorage.getItem(`task_${task.id}_completed_year`);
-            
-            if (lastCompleted && parseInt(lastCompleted) < currentYear) {
-                completedTasks.delete(task.id);
-                localStorage.removeItem(`task_${task.id}_completed_year`);
-                resetCount++;
-                console.log(`Auto-reset task ${task.id} for new year cycle`);
-            }
-        }
-    });
+    // Check if we've already reset this year
+    const lastResetYear = localStorage.getItem('lastNewYearReset');
     
-    if (resetCount > 0) {
-        console.log(`Auto-reset ${resetCount} tasks for ${currentMonth} ${currentYear}`);
-        saveCompletedTasks(); // Save the reset state
+    if (isNewYear && (!lastResetYear || parseInt(lastResetYear) < currentYear)) {
+        // Full reset for new year
+        completedTasks.clear();
+        localStorage.removeItem('completedTasks');
+        
+        // Clear all task completion years
+        allTasks.forEach(task => {
+            localStorage.removeItem(`task_${task.id}_completed_year`);
+        });
+        
+        // Mark this year as reset
+        localStorage.setItem('lastNewYearReset', currentYear.toString());
+        
+        console.log(`🎉 FULL RESET for new year ${currentYear}! All tasks unchecked.`);
+        
+        // Save the reset state
+        saveCompletedTasks();
     }
 }
 
@@ -149,7 +152,7 @@ function checkForYearlyReset() {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTasks();
     await loadCompletedTasks();
-    checkForYearlyReset(); // Check for yearly resets
+    checkForNewYearReset(); // Check for new year reset
     setupFilterButtons();
     renderTasks();
     setupFirebaseListener();
@@ -541,13 +544,12 @@ function setupCheckboxListeners() {
     });
 }
 
-// Format date to Norwegian format
+// Format date to Norwegian format (month and day only - no year for yearly cycle)
 function formatDate(dateString) {
     const date = new Date(dateString);
     const day = date.getDate();
     const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    return `${day}. ${month.toLowerCase()} ${year}`;
+    return `${day}. ${month.toLowerCase()}`;
 }
 
 // Show error message
