@@ -111,16 +111,31 @@ function isTaskOverdue(task) {
     return dueDate < today;
 }
 
+// Check if a month is before current month
+function isMonthBeforeCurrent(month) {
+    if (month === 'lopende') return false;
+    const currentMonth = getCurrentMonth();
+    return month < currentMonth;
+}
+
 // Sort tasks within a month (smart sorting based on completion and due date)
-function sortTasksInMonth(tasks) {
+function sortTasksInMonth(tasks, monthId) {
+    const isPastMonth = isMonthBeforeCurrent(monthId);
+    
     return tasks.sort((a, b) => {
         const aCompleted = completedTasks.has(a.id);
         const bCompleted = completedTasks.has(b.id);
-        const aOverdue = isTaskOverdue(a);
-        const bOverdue = isTaskOverdue(b);
+        const aOverdue = isPastMonth || isTaskOverdue(a);
+        const bOverdue = isPastMonth || isTaskOverdue(b);
         
-        // Priority 1: Unchecked overdue tasks (top)
-        if (!aCompleted && aOverdue && (!bCompleted && bOverdue)) return 0;
+        // Priority 1: Unchecked overdue/past month tasks (top)
+        if (!aCompleted && aOverdue && (!bCompleted && bOverdue)) {
+            // Both unchecked and overdue, sort by due date
+            if (a.dueDate && b.dueDate) {
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            }
+            return 0;
+        }
         if (!aCompleted && aOverdue) return -1;
         if (!bCompleted && bOverdue) return 1;
         
@@ -140,7 +155,14 @@ function sortTasksInMonth(tasks) {
         if (aCompleted && !aOverdue) return -1;
         if (bCompleted && !bOverdue) return 1;
         
-        // Priority 4: Checked overdue tasks (bottom)
+        // Priority 4: Checked overdue/past month tasks (bottom)
+        if (aCompleted && aOverdue && (bCompleted && bOverdue)) {
+            // Both checked and overdue, sort by due date (oldest at bottom)
+            if (a.dueDate && b.dueDate) {
+                return new Date(b.dueDate) - new Date(a.dueDate);
+            }
+            return 0;
+        }
         return 0;
     });
 }
@@ -166,7 +188,7 @@ function organizeTasksByMonth(tasks) {
     
     // Sort tasks within each month
     Object.keys(tasksByMonth).forEach(month => {
-        tasksByMonth[month] = sortTasksInMonth(tasksByMonth[month]);
+        tasksByMonth[month] = sortTasksInMonth(tasksByMonth[month], month);
     });
     
     return tasksByMonth;
@@ -226,7 +248,9 @@ function renderTaskCard(task) {
     const roleClass = task.role ? task.role.toLowerCase() : '';
     const roleBadge = task.role ? `<span class="role-badge ${roleClass}">${task.role}</span>` : '';
     const isCompleted = completedTasks.has(task.id);
+    const isPastMonth = isMonthBeforeCurrent(task.month);
     const isOverdue = isTaskOverdue(task);
+    const needsAttention = (isPastMonth || isOverdue) && !isCompleted;
     
     // Build single-line info
     const infoParts = [];
@@ -237,7 +261,7 @@ function renderTaskCard(task) {
     
     if (task.dueDate) {
         const dateStr = formatDate(task.dueDate);
-        const overdueLabel = !isCompleted && isOverdue ? ' <span class="overdue-badge">⚠️ Forfalt</span>' : '';
+        const overdueLabel = needsAttention ? ' <span class="overdue-badge">⚠️ Må følges opp</span>' : '';
         infoParts.push(`<strong>Frist:</strong> ${dateStr}${overdueLabel}`);
     }
     
@@ -251,7 +275,7 @@ function renderTaskCard(task) {
         'task-card',
         `role-${roleClass}`,
         isCompleted ? 'completed' : '',
-        !isCompleted && isOverdue ? 'overdue' : ''
+        needsAttention ? 'overdue' : ''
     ].filter(Boolean).join(' ');
     
     return `
