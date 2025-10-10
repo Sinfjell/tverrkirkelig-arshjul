@@ -48,15 +48,32 @@ function moveTaskToNextYear(taskId) {
     console.log(`Moved task ${taskId} to next year: ${task.dueDate}`);
 }
 
+// Move task back to current year when unchecked
+function moveTaskToCurrentYear(taskId) {
+    const task = allTasks.find(t => t.id === taskId);
+    if (!task || !task.dueDate) return;
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const dueDate = new Date(task.dueDate);
+    dueDate.setFullYear(currentYear);
+    task.dueDate = dueDate.toISOString().split('T')[0];
+    
+    console.log(`Moved task ${taskId} back to current year: ${task.dueDate}`);
+}
+
 // Save single task status to Firebase
 async function saveTaskStatus(taskId, completed) {
     try {
+        const task = allTasks.find(t => t.id === taskId);
+        
         // If completing an overdue task, move it to next year
-        if (completed) {
-            const task = allTasks.find(t => t.id === taskId);
-            if (task && isTaskOverdue(task)) {
-                moveTaskToNextYear(taskId);
-            }
+        if (completed && task && isTaskOverdue(task)) {
+            moveTaskToNextYear(taskId);
+        }
+        // If unchecking a task, move it back to current year
+        else if (!completed && task) {
+            moveTaskToCurrentYear(taskId);
         }
         
         // Fallback to localStorage if Firebase not available
