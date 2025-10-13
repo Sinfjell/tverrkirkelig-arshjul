@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Årshjul - Tverrkirkelig</title>
+    <link rel="icon" href="https://tverrkirkelig.no/wp-content/uploads/2021/09/cropped-Logo_1200_trans-1-150x150.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <img src="https://tverrkirkelig.no/wp-content/uploads/2021/10/Ltu_Logo-160x165.png" alt="Tverrkirkelig Logo" class="logo">
+                <h1>Årshjul</h1>
+                <nav class="main-nav">
+                    <a href="/" class="nav-link">Lenker</a>
+                    <a href="/arshjul.html" class="nav-link active">Årshjul</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="filter-section">
+                <h2>Filtrer oppgaver</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-role="all">Alle</button>
+                    <button class="filter-btn" data-role="Styret">Styret</button>
+                    <button class="filter-btn" data-role="Admin">Admin</button>
+                    <button class="filter-btn" data-role="Lokallag">Lokallag</button>
+                </div>
+            </div>
+
+            <div id="tasks-container" class="tasks-container">
+                <!-- Tasks will be dynamically rendered here -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 Tverrkirkelig. Alle rettigheter reservert.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase configuration - Tverrkirkelig Årshjul
+        const firebaseConfig = {
+            apiKey: "AIzaSyC2q_GCzgsLMBM25QRRMEcOGUJFwlFzYu0",
+            authDomain: "tverrkirkelig-arshjul.firebaseapp.com",
+            projectId: "tverrkirkelig-arshjul",
+            storageBucket: "tverrkirkelig-arshjul.firebasestorage.app",
+            messagingSenderId: "90762996927",
+            appId: "1:90762996927:web:e75acf9d0a2df9c4ea6a0a",
+            measurementId: "G-BD6CXS5DMC"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally
+        window.db = db;
+        window.doc = doc;
+        window.setDoc = setDoc;
+        window.getDoc = getDoc;
+        window.onSnapshot = onSnapshot;
+        window.collection = collection;
+        window.query = query;
+        window.where = where;
+        window.getDocs = getDocs;
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
