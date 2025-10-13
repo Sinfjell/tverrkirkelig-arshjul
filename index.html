@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Årshjul - Tverrkirkelig</title>
+    <title>Lenker - Tverrkirkelig</title>
     <link rel="icon" href="https://tverrkirkelig.no/wp-content/uploads/2021/09/cropped-Logo_1200_trans-1-150x150.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,25 +12,55 @@
         <div class="container">
             <div class="header-content">
                 <img src="https://tverrkirkelig.no/wp-content/uploads/2021/10/Ltu_Logo-160x165.png" alt="Tverrkirkelig Logo" class="logo">
-                <h1>Årshjul</h1>
+                <h1>Lenker</h1>
+                <nav class="main-nav">
+                    <a href="/" class="nav-link active">Lenker</a>
+                    <a href="/arshjul.html" class="nav-link">Årshjul</a>
+                </nav>
             </div>
         </div>
     </header>
 
     <main class="main-content">
         <div class="container">
-            <div class="filter-section">
-                <h2>Filtrer oppgaver</h2>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-role="all">Alle</button>
-                    <button class="filter-btn" data-role="Styret">Styret</button>
-                    <button class="filter-btn" data-role="Admin">Admin</button>
-                    <button class="filter-btn" data-role="Lokallag">Lokallag</button>
-                </div>
-            </div>
+            <div class="links-section">
+                <h2>Viktige lenker</h2>
+                <p class="links-subtitle">Ett-klikks tilgang til de mest brukte ressursene.</p>
+                
+                <div class="links-grid">
+                    <a href="https://lookerstudio.google.com/u/0/reporting/89700f68-b500-4cb4-983a-9422e724a1fc" target="_blank" rel="noopener noreferrer" class="link-card">
+                        <div class="link-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                        <div class="link-content">
+                            <h3 class="link-title">Tilskuddsrapport</h3>
+                            <p class="link-description">Rapport over utbetalte tilskudd som brukes ved tildeling av midler.</p>
+                            <div class="link-label">LOOKER STUDIO</div>
+                        </div>
+                    </a>
 
-            <div id="tasks-container" class="tasks-container">
-                <!-- Tasks will be dynamically rendered here -->
+                    <a href="https://docs.google.com/document/d/1VvfXeMes4SqkFdWmRzm6PwdIfhTMt4shpJ0wh-KZytY/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="link-card">
+                        <div class="link-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="link-content">
+                            <h3 class="link-title">Møtenotater</h3>
+                            <p class="link-description">Notater fra arbeidsmøter og innlevering av sakspunkter til ukentlige møter.</p>
+                            <div class="link-label">GOOGLE DOC</div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </main>
@@ -41,39 +71,6 @@
         </div>
     </footer>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        
-        // Firebase configuration - Tverrkirkelig Årshjul
-        const firebaseConfig = {
-            apiKey: "AIzaSyC2q_GCzgsLMBM25QRRMEcOGUJFwlFzYu0",
-            authDomain: "tverrkirkelig-arshjul.firebaseapp.com",
-            projectId: "tverrkirkelig-arshjul",
-            storageBucket: "tverrkirkelig-arshjul.firebasestorage.app",
-            messagingSenderId: "90762996927",
-            appId: "1:90762996927:web:e75acf9d0a2df9c4ea6a0a",
-            measurementId: "G-BD6CXS5DMC"
-        };
-        
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        // Make Firebase available globally
-        window.db = db;
-        window.doc = doc;
-        window.setDoc = setDoc;
-        window.getDoc = getDoc;
-        window.onSnapshot = onSnapshot;
-        window.collection = collection;
-        window.query = query;
-        window.where = where;
-        window.getDocs = getDocs;
-    </script>
-    
-    <script src="script.js"></script>
+    <script src="lenker.js"></script>
 </body>
 </html>
-

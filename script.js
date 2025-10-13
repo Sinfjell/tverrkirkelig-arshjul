@@ -145,7 +145,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupFilterButtons();
     renderTasks();
     setupFirebaseListener();
+    setupNavigationHighlighting();
 });
+
+// Navigation highlighting for Årshjul page
+function setupNavigationHighlighting() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        const href = link.getAttribute('href');
+        
+        // Check if current path matches the link href
+        if ((currentPath === '/' && href === '/') || 
+            (currentPath === '/arshjul.html' && href === '/arshjul.html') ||
+            (currentPath === '/arshjul' && href === '/arshjul')) {
+            link.classList.add('active');
+        }
+    });
+}
 
 function normalizeDateToCurrentYear(task) {
     if (!task.dueDate) return task;

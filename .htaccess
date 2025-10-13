@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# Handle clean URLs
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirect /arshjul to arshjul.html
+RewriteRule ^arshjul/?$ arshjul.html [L]
+
+# Redirect root / to index.html (this is usually handled automatically)
+RewriteRule ^$ index.html [L]
