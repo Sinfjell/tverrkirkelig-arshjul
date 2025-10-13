@@ -21,7 +21,13 @@ async function loadCompletedTasks() {
         completedTasks.clear();
         
         snapshot.forEach((doc) => {
-            if (doc.data().completed) completedTasks.add(doc.id);
+            const data = doc.data();
+            if (data.completed) completedTasks.add(doc.id);
+            
+            // Load due date override from Firebase
+            if (data.dueDate) {
+                localStorage.setItem(`task_${doc.id}_dueDate`, data.dueDate);
+            }
         });
         
         console.log('Loaded completed tasks from Firebase:', completedTasks.size);
@@ -95,14 +101,18 @@ async function saveTaskStatus(taskId, completed) {
             return;
         }
         
+        // Get the effective due date (override or original)
+        const effectiveDueDate = task ? getTaskDueDate(task) : null;
+        
         const taskRef = doc(window.db, 'taskStatus', taskId);
         await setDoc(taskRef, {
             completed: completed,
             lastUpdated: new Date(),
-            taskId: taskId
+            taskId: taskId,
+            dueDate: effectiveDueDate // Save the due date override to Firebase
         }, { merge: true });
         
-        console.log(`Saved task ${taskId} to Firebase: ${completed}`);
+        console.log(`Saved task ${taskId} to Firebase: ${completed}, dueDate: ${effectiveDueDate}`);
     } catch (error) {
         console.error('Error saving task status:', error);
         localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
@@ -465,7 +475,16 @@ function setupFirebaseListener() {
             const previousSize = completedTasks.size;
             completedTasks.clear();
             snapshot.forEach((doc) => {
-                if (doc.data().completed) completedTasks.add(doc.id);
+                const data = doc.data();
+                if (data.completed) completedTasks.add(doc.id);
+                
+                // Sync due date override from Firebase
+                if (data.dueDate) {
+                    localStorage.setItem(`task_${doc.id}_dueDate`, data.dueDate);
+                } else {
+                    // If no override in Firebase, remove any local override
+                    localStorage.removeItem(`task_${doc.id}_dueDate`);
+                }
             });
             
             if (completedTasks.size !== previousSize || snapshot.docChanges().length > 0) {
