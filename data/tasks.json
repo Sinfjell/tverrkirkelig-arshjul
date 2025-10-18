@@ -1,43 +1,13 @@
 [
   {
-    "id": "2xhx29v",
-    "taskName": "Styremøte vår",
-    "role": "Styret",
-    "month": 2,
-    "monthName": "Februar",
-    "sopUrl": "",
-    "assignees": ["Sindre Fjellestad", "Anders Myklebust"],
-    "dueDate": "2023-02-11"
-  },
-  {
-    "id": "2xhx2j7",
-    "taskName": "Lederhelg",
-    "role": "Styret",
-    "month": 2,
-    "monthName": "Februar",
-    "sopUrl": "",
-    "assignees": ["Viktor Kleppan", "Anders Myklebust"],
-    "dueDate": "2023-02-12"
-  },
-  {
     "id": "861m9xaye",
     "taskName": "Betal tilbake midler for sentral innkreving",
     "role": "Admin",
     "month": 2,
     "monthName": "Februar",
     "sopUrl": "",
-    "assignees": ["Jonatan Sindholt Syvertsen"],
+    "assignees": ["Svein Bakke"],
     "dueDate": "2023-02-15"
-  },
-  {
-    "id": "86bx934fd",
-    "taskName": "K-stud nominasjon",
-    "role": "",
-    "month": 1,
-    "monthName": "Januar",
-    "sopUrl": "",
-    "assignees": [],
-    "dueDate": "2024-01-31"
   },
   {
     "id": "86bxa1x9v",
@@ -46,7 +16,7 @@
     "month": 1,
     "monthName": "Januar",
     "sopUrl": "",
-    "assignees": ["Mathias Edvardsen"],
+    "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2026-01-31"
   },
   {
@@ -70,7 +40,7 @@
     "quarter": "Q1",
     "tags": ["altinn"],
     "sopUrl": "https://docs.google.com/document/d/1FJH-rly2wFetemZL1NK2Ab-wOoPdYvEGaaSbiJWxeEI/edit#heading=h.rfcyq1nez30y",
-    "assignees": ["Svein Bakke", "Mathias Edvardsen"],
+    "assignees": ["Svein Bakke"],
     "dueDate": "2026-01-20"
   },
   {
@@ -82,7 +52,7 @@
     "quarter": "Q1",
     "tags": ["LNU"],
     "sopUrl": "",
-    "assignees": ["Mathias Edvardsen"],
+    "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2026-03-01"
   },
   {
@@ -94,41 +64,10 @@
     "quarter": "Q2",
     "tags": ["LNU"],
     "sopUrl": "",
-    "assignees": ["Svein Bakke", "Mathias Edvardsen"],
+    "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2026-04-15"
   },
-  {
-    "id": "86bz6wny2",
-    "taskName": "Betal tilbake midler for sentral innkreving",
-    "role": "Admin",
-    "month": 4,
-    "monthName": "April",
-    "sopUrl": "",
-    "assignees": ["Svein Bakke"],
-    "dueDate": "2026-04-30"
-  },
-  {
-    "id": "86bydbv59",
-    "taskName": "Levere skattemelding",
-    "role": "Admin",
-    "month": 5,
-    "monthName": "Mai",
-    "quarter": "Q2",
-    "tags": ["Økonomi"],
-    "sopUrl": "",
-    "assignees": ["Svein Bakke"],
-    "dueDate": "2024-05-31"
-  },
-  {
-    "id": "86c1fthyv",
-    "taskName": "Halvtårsrapport og utsendelse av oppdatering til lokallagsledere",
-    "role": "",
-    "month": 6,
-    "monthName": "Juni",
-    "sopUrl": "",
-    "assignees": ["Mathias Edvardsen"],
-    "dueDate": "2025-06-16"
-  },
+
   {
     "id": "2y2z6uq",
     "taskName": "MVA kompensasjon",
@@ -150,18 +89,8 @@
     "quarter": "Q3",
     "tags": ["Bufdir"],
     "sopUrl": "",
-    "assignees": ["Jonatan Sindholt Syvertsen", "Svein Bakke"],
+    "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2023-09-15"
-  },
-  {
-    "id": "86c06jkvv",
-    "taskName": "Sende inn årsrapport til k-stud",
-    "role": "",
-    "month": 9,
-    "monthName": "September",
-    "sopUrl": "",
-    "assignees": ["Mathias Edvardsen"],
-    "dueDate": "2024-09-20"
   },
   {
     "id": "2y2z2wk",
@@ -170,70 +99,8 @@
     "month": 9,
     "monthName": "September",
     "sopUrl": "",
-    "assignees": ["Mathias Edvardsen", "Johannes Bjørkholt"],
+    "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2025-09-15"
-  },
-  {
-    "id": "86c02j678",
-    "taskName": "Søknad til Bufdir",
-    "role": "Admin",
-    "month": 9,
-    "monthName": "September",
-    "quarter": "Q3",
-    "tags": ["Bufdir"],
-    "sopUrl": "",
-    "assignees": ["Svein Bakke", "Johannes Bjørkholt"],
-    "dueDate": "2026-09-15"
-  },
-  {
-    "id": "2w9vrh3",
-    "taskName": "Landsmøte",
-    "role": "Styret",
-    "month": 10,
-    "monthName": "Oktober",
-    "sopUrl": "",
-    "assignees": ["Sindre Fjellestad"],
-    "dueDate": "2023-10-01"
-  },
-  {
-    "id": "2w9vrhd",
-    "taskName": "Sette lokasjon for landsmøte (fysisk eller digitalt)?",
-    "role": "",
-    "month": 10,
-    "monthName": "Oktober",
-    "sopUrl": "",
-    "assignees": ["Sindre Fjellestad"],
-    "dueDate": "2022-10-31"
-  },
-  {
-    "id": "86c53k1pf",
-    "taskName": "Halvtårsrapport og utsendelse av oppdatering til lokallagsledere",
-    "role": "",
-    "month": 12,
-    "monthName": "Desember",
-    "sopUrl": "",
-    "assignees": ["Mathias Edvardsen", "Johannes Bjørkholt"],
-    "dueDate": "2025-12-15"
-  },
-  {
-    "id": "2y2ytze",
-    "taskName": "Styremøte høst",
-    "role": "Styret",
-    "month": 12,
-    "monthName": "Desember",
-    "sopUrl": "",
-    "assignees": ["Sindre Fjellestad"],
-    "dueDate": "2023-12-08"
-  },
-  {
-    "id": "862kp81nd",
-    "taskName": "Årlig hilsen daglig leder",
-    "role": "Admin",
-    "month": 12,
-    "monthName": "Desember",
-    "sopUrl": "",
-    "assignees": ["Sindre Fjellestad"],
-    "dueDate": "2023-12-22"
   },
   {
     "id": "2y2z7ab",
@@ -243,38 +110,18 @@
     "monthName": "Desember",
     "sopUrl": "",
     "assignees": ["Svein Bakke", "Johannes Bjørkholt"],
-    "dueDate": "2025-12-31"
-  },
-  {
-    "id": "86c19zzg7",
-    "taskName": "Halvtårsrapport og utsendelse av oppdatering til lokallagsledere",
-    "role": "",
-    "month": 12,
-    "monthName": "Desember",
-    "sopUrl": "",
-    "assignees": ["Mathias Edvardsen"],
-    "dueDate": "2024-12-31"
-  },
-  {
-    "id": "86bx2nmnt",
-    "taskName": "Nominere kandidat til LNU styret",
-    "role": "",
-    "month": null,
-    "monthName": "Løpende",
-    "sopUrl": "",
-    "assignees": ["Anders Myklebust", "Viktor Kleppan"],
-    "dueDate": null
+    "dueDate": "2025-11-31"
   },
   {
     "id": "86c231ux2",
     "taskName": "Gjøre siste finish på budsjett, validere med admin og til slutt sende til styret",
     "role": "",
-    "month": null,
-    "monthName": "Løpende",
+    "month": 11,
+    "monthName": "November",
     "quarter": "",
     "tags": [],
     "sopUrl": "",
-    "assignees": ["Sindre Fjellestad"],
+    "assignees": ["Svein Bakke"],
     "dueDate": null
   }
 ]

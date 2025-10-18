@@ -107,7 +107,22 @@ body {
 .filter-section h2 {
     color: var(--color-primary);
     font-size: 1.2rem;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-group h3 {
+    color: var(--color-dark);
+    font-size: 1rem;
+    margin-bottom: 8px;
+    font-weight: 600;
 }
 
 .filter-buttons {

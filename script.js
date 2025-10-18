@@ -1,6 +1,7 @@
 // Global state
 let allTasks = [];
 let currentFilter = 'all';
+let currentPersonFilter = 'all';
 let completedTasks = new Set();
 
 const monthNames = [
@@ -152,11 +153,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadTasks();
     await loadCompletedTasks();
     checkForNewYearReset();
+    generatePersonFilterButtons();
     setupFilterButtons();
     renderTasks();
     setupFirebaseListener();
     setupNavigationHighlighting();
 });
+
+function generatePersonFilterButtons() {
+    const personFilterContainer = document.getElementById('person-filter-buttons');
+    
+    // Get all unique assignees from tasks
+    const allAssignees = new Set();
+    allTasks.forEach(task => {
+        if (task.assignees && task.assignees.length > 0) {
+            task.assignees.forEach(assignee => allAssignees.add(assignee));
+        }
+    });
+    
+    // Sort assignees alphabetically
+    const sortedAssignees = Array.from(allAssignees).sort();
+    
+    // Clear existing buttons (except "Alle")
+    const existingButtons = personFilterContainer.querySelectorAll('.filter-btn:not([data-person="all"])');
+    existingButtons.forEach(button => button.remove());
+    
+    // Add buttons for each person
+    sortedAssignees.forEach(assignee => {
+        const button = document.createElement('button');
+        button.className = 'filter-btn';
+        button.dataset.person = assignee;
+        button.textContent = assignee;
+        personFilterContainer.appendChild(button);
+    });
+}
 
 // Navigation highlighting for Årshjul page
 function setupNavigationHighlighting() {
@@ -211,21 +241,47 @@ async function loadTasks() {
 }
 
 function setupFilterButtons() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    // Role filter buttons
+    const roleFilterButtons = document.querySelectorAll('.filter-buttons:not(#person-filter-buttons) .filter-btn');
     
-    filterButtons.forEach(button => {
+    roleFilterButtons.forEach(button => {
         button.addEventListener('click', () => {
-            filterButtons.forEach(btn => btn.classList.remove('active'));
+            roleFilterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             currentFilter = button.dataset.role;
+            renderTasks();
+        });
+    });
+    
+    // Person filter buttons
+    const personFilterButtons = document.querySelectorAll('#person-filter-buttons .filter-btn');
+    
+    personFilterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            personFilterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentPersonFilter = button.dataset.person;
             renderTasks();
         });
     });
 }
 
 function getFilteredTasks() {
-    if (currentFilter === 'all') return allTasks;
-    return allTasks.filter(task => task.role === currentFilter || !task.role);
+    let filteredTasks = allTasks;
+    
+    // Filter by role
+    if (currentFilter !== 'all') {
+        filteredTasks = filteredTasks.filter(task => task.role === currentFilter || !task.role);
+    }
+    
+    // Filter by person
+    if (currentPersonFilter !== 'all') {
+        filteredTasks = filteredTasks.filter(task => 
+            task.assignees && task.assignees.includes(currentPersonFilter)
+        );
+    }
+    
+    return filteredTasks;
 }
 
 function getCurrentMonth() {
