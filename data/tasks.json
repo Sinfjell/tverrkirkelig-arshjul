@@ -31,18 +31,7 @@
     "assignees": ["Svein Bakke"],
     "dueDate": "2026-01-31"
   },
-  {
-    "id": "86bx2mprm",
-    "taskName": "Sende inn rapport på gaver til frivillige organisasjoner",
-    "role": "Admin",
-    "month": 1,
-    "monthName": "Januar",
-    "quarter": "Q1",
-    "tags": ["altinn"],
-    "sopUrl": "https://docs.google.com/document/d/1FJH-rly2wFetemZL1NK2Ab-wOoPdYvEGaaSbiJWxeEI/edit#heading=h.rfcyq1nez30y",
-    "assignees": ["Svein Bakke"],
-    "dueDate": "2026-01-20"
-  },
+
   {
     "id": "86c2brr24",
     "taskName": "Rapport til LNU vedrørende frifondmidler",
@@ -123,6 +112,18 @@
     "sopUrl": "",
     "assignees": ["Svein Bakke"],
     "dueDate": null
+  },
+  {
+    "id": "new_member_type_2025",
+    "taskName": "Sette opp ny medlemstype etter årskifte",
+    "role": "Admin",
+    "month": 1,
+    "monthName": "Januar",
+    "quarter": "Q1",
+    "tags": ["Medlemskap"],
+    "sopUrl": "https://docs.google.com/document/d/1etgScbLVuxuGHf1RnEdMayLiA5ipg1i8sPKYh8Bi1p0/edit?tab=t.0",
+    "assignees": ["Johannes Bjørkholt"],
+    "dueDate": "2026-01-10"
   }
 ]
 
