@@ -160,15 +160,12 @@ function normalizeDateToCurrentYear(task) {
 
 async function loadTasks() {
     try {
-        console.log('Loading tasks...');
         const response = await fetch('/data/tasks.json', { cache: 'no-cache' });
         if (!response.ok) throw new Error('Could not load tasks');
         
         const tasks = await response.json();
-        console.log('Raw tasks loaded:', tasks.length);
         allTasks = tasks.map(task => normalizeDateToCurrentYear(task));
-        console.log('Tasks processed:', allTasks.length);
-        console.log('First task:', allTasks[0]);
+        console.log('Tasks loaded and normalized to current year cycle');
     } catch (error) {
         console.error('Error loading tasks:', error);
         showError('Kunne ikke laste oppgaver. Vennligst prøv igjen senere.');
@@ -342,9 +339,7 @@ function getOverdueTasks(tasks) {
 
 function renderTasks() {
     const container = document.getElementById('tasks-container');
-    console.log('Rendering tasks, allTasks length:', allTasks.length);
     const filteredTasks = getFilteredTasks();
-    console.log('Filtered tasks length:', filteredTasks.length);
     
     if (filteredTasks.length === 0) {
         container.innerHTML = `
