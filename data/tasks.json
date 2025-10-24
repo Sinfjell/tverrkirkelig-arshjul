@@ -15,7 +15,7 @@
     "role": "Lokallag",
     "month": 1,
     "monthName": "Januar",
-    "sopUrl": "",
+    "sopUrl": "https://docs.google.com/document/d/1uiI2-IFpYNF1nuw4NqtlcFwUB4LaB3myqVnSb5JyLMA/edit?tab=t.0",
     "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2026-01-31"
   },
@@ -40,7 +40,7 @@
     "monthName": "Mars",
     "quarter": "Q1",
     "tags": ["LNU"],
-    "sopUrl": "",
+    "sopUrl": "https://docs.google.com/document/d/1lOJyFUA-J1SYV07sAFw_v4r33LiRZZhScdKCY2guTaQ/edit?tab=t.0",
     "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2026-03-01"
   },
@@ -52,7 +52,7 @@
     "monthName": "April",
     "quarter": "Q2",
     "tags": ["LNU"],
-    "sopUrl": "",
+    "sopUrl": "https://docs.google.com/document/d/11gKlb_rLfUOWpyeOCyfcERviWTZFKQqGyXhKamYpGy8/edit?pli=1&tab=t.0#heading=h.s0asrqvmqjlz",
     "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2026-04-15"
   },
