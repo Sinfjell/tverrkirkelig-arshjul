@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-01-27
+
+### Fixed
+- Safari compatibility issues with date parsing and formatting
+- Enhanced error handling for invalid date strings
+- Added debugging logs for date conversion troubleshooting
+
+## [1.1.0] - 2025-01-27
+
+### Changed
+- Removed localStorage due date caching for consistent cross-browser behavior
+- Simplified due date logic to use static yearly plan (month/day only)
+
+### Fixed
+- Due dates now consistent across all browsers and users
+- No more different overdue states between browsers
+
+### Improved
+- Due date system now uses current year dynamically with month/day from JSON
+- Eliminated localStorage due date overrides that caused inconsistencies
+
 ## [1.0.1] - 2025-10-24
 
 ### Fixed
@@ -25,3 +46,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SOP (Standard Operating Procedure) links for tasks
 - Responsive design for desktop and mobile
 - New year automatic reset functionality
+4

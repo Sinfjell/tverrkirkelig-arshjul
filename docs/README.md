@@ -44,6 +44,16 @@ En statisk webapplikasjon for å administrere årlige oppgaver og viktige lenker
 - SOP-lenker for oppgaver
 - Automatisk nullstilling ved nytt år
 
+## Due Date Logic (Static Yearly Plan)
+
+The system uses a static yearly plan approach for due dates:
+
+- **Year in JSON is ignored**: Tasks use only month/day from `tasks.json`
+- **Current year is used**: System always uses the current year for date comparison
+- **Overdue detection**: A task is overdue if it's unchecked and the current date has passed the task's month/day this year
+- **No year manipulation**: No localStorage caching or year changes - dates are calculated dynamically
+- **Consistent across browsers**: All users see the same due date states since there's no local caching
+
 ## Teknisk informasjon
 
 - **Frontend**: Vanilla HTML, CSS, JavaScript
