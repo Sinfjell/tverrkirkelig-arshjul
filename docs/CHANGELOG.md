@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-01-27
+
+### Fixed
+- Safari compatibility issues with date parsing and formatting
+- Enhanced error handling for invalid date strings
+- Added debugging logs for date conversion troubleshooting
+
 ## [1.1.0] - 2025-01-27
 
 ### Changed
