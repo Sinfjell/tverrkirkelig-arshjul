@@ -228,7 +228,7 @@ function normalizeDateToCurrentYear(task) {
 
 async function loadTasks() {
     try {
-        const response = await fetch('data/tasks.json');
+        const response = await fetch('/data/tasks.json', { cache: 'no-cache' });
         if (!response.ok) throw new Error('Could not load tasks');
         
         const tasks = await response.json();
