@@ -42,8 +42,16 @@ function getTaskDueDate(task) {
     const currentYear = today.getFullYear();
     const [year, month, day] = task.dueDate.split('-');
     
+    // Validate the split result
+    if (!month || !day) {
+        console.error('Invalid dueDate format:', task.dueDate, 'for task:', task.id);
+        return null;
+    }
+    
     // Always use current year, keep original month/day
-    return `${currentYear}-${month}-${day}`;
+    const newDate = `${currentYear}-${month}-${day}`;
+    console.log(`Task ${task.id}: ${task.dueDate} -> ${newDate}`);
+    return newDate;
 }
 
 // Save single task status to Firebase
@@ -499,8 +507,23 @@ function setupCheckboxListeners() {
 
 function formatDate(dateString) {
     const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+        console.error('Invalid date string:', dateString);
+        return 'Invalid date';
+    }
+    
     const day = date.getDate();
-    const month = monthNames[date.getMonth()];
+    const monthIndex = date.getMonth();
+    const month = monthNames[monthIndex];
+    
+    // Check if month exists
+    if (!month) {
+        console.error('Invalid month index:', monthIndex, 'for date:', dateString);
+        return 'Invalid date';
+    }
+    
     return `${day}. ${month.toLowerCase()}`;
 }
 
