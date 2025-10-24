@@ -36,7 +36,7 @@ async function loadCompletedTasks() {
 
 // Get task due date with current year (for static yearly plan)
 function getTaskDueDate(task) {
-    if (!task.dueDate) return null;
+    if (!task.dueDate || task.dueDate === null) return null;
     
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -154,22 +154,7 @@ function setupNavigationHighlighting() {
 }
 
 function normalizeDateToCurrentYear(task) {
-    if (!task.dueDate) return task;
-    
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
-    const dueDate = new Date(task.dueDate);
-    const taskMonth = task.month - 1;
-    
-    let targetYear = currentYear;
-    if (taskMonth < currentMonth) {
-        targetYear = currentYear + 1;
-    }
-    
-    dueDate.setFullYear(targetYear);
-    task.dueDate = dueDate.toISOString().split('T')[0];
-    
+    // No longer needed - due dates are handled dynamically in getTaskDueDate()
     return task;
 }
 
