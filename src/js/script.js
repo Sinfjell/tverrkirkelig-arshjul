@@ -24,11 +24,6 @@ async function loadCompletedTasks() {
         snapshot.forEach((doc) => {
             const data = doc.data();
             if (data.completed) completedTasks.add(doc.id);
-            
-            // Load due date override from Firebase
-            if (data.dueDate) {
-                localStorage.setItem(`task_${doc.id}_dueDate`, data.dueDate);
-            }
         });
         
         console.log('Loaded completed tasks from Firebase:', completedTasks.size);
@@ -39,81 +34,34 @@ async function loadCompletedTasks() {
     }
 }
 
-// Get effective due date (stored override or original from JSON)
+// Get task due date with current year (for static yearly plan)
 function getTaskDueDate(task) {
-    const stored = localStorage.getItem(`task_${task.id}_dueDate`);
-    return stored || task.dueDate;
-}
-
-// Set task due date in localStorage
-function setTaskDueDate(taskId, dueDate) {
-    localStorage.setItem(`task_${taskId}_dueDate`, dueDate);
-}
-
-// Remove task due date override (revert to JSON original)
-function removeTaskDueDateOverride(taskId) {
-    localStorage.removeItem(`task_${task.id}_dueDate`);
-}
-
-// Move task to next year when completed
-function moveTaskToNextYear(taskId) {
-    const task = allTasks.find(t => t.id === taskId);
-    if (!task || !task.dueDate) return;
-    
-    const currentDueDate = getTaskDueDate(task);
-    const dueDate = new Date(currentDueDate);
-    dueDate.setFullYear(dueDate.getFullYear() + 1);
-    const newDueDate = dueDate.toISOString().split('T')[0];
-    
-    setTaskDueDate(taskId, newDueDate);
-    console.log(`Moved task ${taskId} to next year: ${newDueDate}`);
-}
-
-// Move task back to current year when unchecked
-function moveTaskToCurrentYear(taskId) {
-    const task = allTasks.find(t => t.id === taskId);
-    if (!task || !task.dueDate) return;
+    if (!task.dueDate) return null;
     
     const today = new Date();
     const currentYear = today.getFullYear();
-    const dueDate = new Date(task.dueDate); // Use original JSON date
-    dueDate.setFullYear(currentYear);
-    const newDueDate = dueDate.toISOString().split('T')[0];
+    const [year, month, day] = task.dueDate.split('-');
     
-    setTaskDueDate(taskId, newDueDate);
-    console.log(`Moved task ${taskId} back to current year: ${newDueDate}`);
+    // Always use current year, keep original month/day
+    return `${currentYear}-${month}-${day}`;
 }
 
 // Save single task status to Firebase
 async function saveTaskStatus(taskId, completed) {
     try {
-        const task = allTasks.find(t => t.id === taskId);
-        
-        if (completed && task && isTaskOverdue(task)) {
-            moveTaskToNextYear(taskId);
-            localStorage.setItem(`task_${taskId}_completed_year`, new Date().getFullYear().toString());
-        } else if (!completed && task) {
-            moveTaskToCurrentYear(taskId);
-            localStorage.removeItem(`task_${taskId}_completed_year`);
-        }
-        
         if (!window.db) {
             localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
             return;
         }
         
-        // Get the effective due date (override or original)
-        const effectiveDueDate = task ? getTaskDueDate(task) : null;
-        
         const taskRef = doc(window.db, 'taskStatus', taskId);
         await setDoc(taskRef, {
             completed: completed,
             lastUpdated: new Date(),
-            taskId: taskId,
-            dueDate: effectiveDueDate // Save the due date override to Firebase
+            taskId: taskId
         }, { merge: true });
         
-        console.log(`Saved task ${taskId} to Firebase: ${completed}, dueDate: ${effectiveDueDate}`);
+        console.log(`Saved task ${taskId} to Firebase: ${completed}`);
     } catch (error) {
         console.error('Error saving task status:', error);
         localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
@@ -140,7 +88,6 @@ function checkForNewYearReset() {
         
         allTasks.forEach(task => {
             localStorage.removeItem(`task_${task.id}_completed_year`);
-            localStorage.removeItem(`task_${task.id}_dueDate`); // Clear due date overrides
         });
         
         localStorage.setItem('lastNewYearReset', currentYear.toString());
@@ -533,14 +480,6 @@ function setupFirebaseListener() {
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 if (data.completed) completedTasks.add(doc.id);
-                
-                // Sync due date override from Firebase
-                if (data.dueDate) {
-                    localStorage.setItem(`task_${doc.id}_dueDate`, data.dueDate);
-                } else {
-                    // If no override in Firebase, remove any local override
-                    localStorage.removeItem(`task_${doc.id}_dueDate`);
-                }
             });
             
             if (completedTasks.size !== previousSize || snapshot.docChanges().length > 0) {
