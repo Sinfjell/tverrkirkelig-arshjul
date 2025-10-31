@@ -24,20 +24,26 @@
     <main class="main-content">
         <div class="container">
             <div class="filter-section">
-                <h2>Filtrer oppgaver</h2>
-                <div class="filter-group">
-                    <h3>Rolle</h3>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" data-role="all">Alle</button>
-                        <button class="filter-btn" data-role="Styret">Styret</button>
-                        <button class="filter-btn" data-role="Admin">Admin</button>
-                        <button class="filter-btn" data-role="Lokallag">Lokallag</button>
+                <button class="filter-toggle-btn" id="filter-toggle-btn">
+                    <span class="filter-icon">🔍</span>
+                    <span class="filter-toggle-text">Vis filter</span>
+                    <span class="filter-arrow">▼</span>
+                </button>
+                <div class="filter-content" id="filter-content">
+                    <div class="filter-group">
+                        <h3>Rolle</h3>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-role="all">Alle</button>
+                            <button class="filter-btn" data-role="Styret">Styret</button>
+                            <button class="filter-btn" data-role="Admin">Admin</button>
+                            <button class="filter-btn" data-role="Lokallag">Lokallag</button>
+                        </div>
                     </div>
-                </div>
-                <div class="filter-group">
-                    <h3>Person</h3>
-                    <div class="filter-buttons" id="person-filter-buttons">
-                        <button class="filter-btn active" data-person="all">Alle</button>
+                    <div class="filter-group">
+                        <h3>Person</h3>
+                        <div class="filter-buttons" id="person-filter-buttons">
+                            <button class="filter-btn active" data-person="all">Alle</button>
+                        </div>
                     </div>
                 </div>
             </div>
