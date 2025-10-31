@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkForNewYearReset();
     generatePersonFilterButtons();
     setupFilterButtons();
+    setupFilterToggle();
     renderTasks();
     setupFirebaseListener();
     setupNavigationHighlighting();
@@ -153,9 +154,12 @@ function setupNavigationHighlighting() {
         const href = link.getAttribute('href');
         
         // Check if current path matches the link href
-        if ((currentPath === '/' && href === '/') || 
-            (currentPath === '/arshjul.html' && href === '/arshjul.html') ||
-            (currentPath === '/arshjul' && href === '/arshjul')) {
+        // Handle various path formats: /, /index.html, /src/pages/index.html for Lenker
+        // and /arshjul.html, /src/pages/arshjul.html for Årshjul
+        const isLenkerPage = (currentPath === '/' || currentPath === '/index.html' || currentPath === '/src/pages/index.html') && href === '/';
+        const isArshjulPage = (currentPath === '/arshjul.html' || currentPath === '/src/pages/arshjul.html' || currentPath === '/arshjul') && href === '/arshjul.html';
+        
+        if (isLenkerPage || isArshjulPage) {
             link.classList.add('active');
         }
     });
@@ -203,6 +207,30 @@ function setupFilterButtons() {
             currentPersonFilter = button.dataset.person;
             renderTasks();
         });
+    });
+}
+
+function setupFilterToggle() {
+    const toggleBtn = document.getElementById('filter-toggle-btn');
+    const filterContent = document.getElementById('filter-content');
+    const toggleText = toggleBtn.querySelector('.filter-toggle-text');
+    
+    if (!toggleBtn || !filterContent) return;
+    
+    toggleBtn.addEventListener('click', () => {
+        const isOpen = filterContent.classList.contains('show');
+        
+        if (isOpen) {
+            // Close the filter
+            filterContent.classList.remove('show');
+            toggleBtn.classList.remove('active');
+            toggleText.textContent = 'Vis filter';
+        } else {
+            // Open the filter
+            filterContent.classList.add('show');
+            toggleBtn.classList.add('active');
+            toggleText.textContent = 'Skjul filter';
+        }
     });
 }
 
