@@ -54,7 +54,8 @@
     "tags": ["LNU"],
     "sopUrl": "https://docs.google.com/document/d/11gKlb_rLfUOWpyeOCyfcERviWTZFKQqGyXhKamYpGy8/edit?pli=1&tab=t.0#heading=h.s0asrqvmqjlz",
     "assignees": ["Johannes Bjørkholt"],
-    "dueDate": "2026-04-15"
+    "dueDate": "2026-04-15",
+    "dependsOn": ["86c2brr24", "2y2yu3z"]
   },
 
   {
