@@ -421,6 +421,108 @@ body {
     margin-left: 4px;
 }
 
+/* Blocked task styling */
+.task-card.blocked {
+    background-color: #f0e6f6;
+    border-left-color: #9c27b0 !important;
+    border-left-width: 4px;
+    opacity: 0.8;
+}
+
+.blocked-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-white);
+    background-color: #9c27b0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+/* Task dependencies */
+.task-dependencies {
+    font-size: 0.85rem;
+    color: var(--color-gray);
+    margin-top: 6px;
+    padding-left: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.task-dependencies strong {
+    color: var(--color-dark);
+    font-weight: 600;
+}
+
+.dependency-link {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.dependency-link.dep-done {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.dependency-link.dep-done:hover {
+    background-color: #c8e6c9;
+}
+
+.dependency-link.dep-pending {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.dependency-link.dep-pending:hover {
+    background-color: #ffe0b2;
+}
+
+.dependency-link {
+    position: relative;
+}
+
+.dependency-link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-dark);
+    color: var(--color-white);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    z-index: 10;
+}
+
+.dependency-link:hover::after {
+    opacity: 1;
+}
+
+/* Highlight pulse when scrolled to */
+@keyframes highlightPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(33, 66, 140, 0); }
+    50% { box-shadow: 0 0 0 6px rgba(33, 66, 140, 0.3); }
+}
+
+.task-card.highlight-pulse {
+    animation: highlightPulse 0.6s ease 3;
+}
+
 /* Footer */
 .site-footer {
     background-color: var(--color-dark);

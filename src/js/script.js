@@ -414,6 +414,7 @@ function renderTasks() {
     
     container.innerHTML = html;
     setupCheckboxListeners();
+    setupDependencyLinks();
 }
 
 function renderMonthSection(monthId, monthName, tasks) {
@@ -437,6 +438,10 @@ function renderTaskCard(task) {
     const isOverdue = isTaskOverdue(task);
     const needsAttention = !isCompleted && isOverdue;
 
+    // Dependency logic
+    const dependencies = getDependencyInfo(task);
+    const isBlocked = !isCompleted && dependencies.some(d => !d.completed);
+
     const infoParts = [];
 
     if (task.assignees && task.assignees.length > 0) {
@@ -452,6 +457,20 @@ function renderTaskCard(task) {
 
     const infoLine = infoParts.length > 0 ? `<div class="task-info-line">${infoParts.join(' • ')}</div>` : '';
 
+    let dependencyHtml = '';
+    if (dependencies.length > 0) {
+        const depItems = dependencies.map(d => {
+            const statusIcon = d.completed ? '✅' : '⚠️';
+            const tooltip = d.completed
+                ? `«${d.name}» er fullført — denne avhengigheten er oppfylt.`
+                : `«${d.name}» må fullføres før du kan begynne på «${task.taskName}». Klikk for å gå til oppgaven.`;
+            return `<a href="#" class="dependency-link ${d.completed ? 'dep-done' : 'dep-pending'}" data-dep-id="${d.id}" data-tooltip="${tooltip}">${statusIcon} ${d.name}</a>`;
+        }).join('');
+        dependencyHtml = `<div class="task-dependencies"><strong>Krever:</strong> ${depItems}</div>`;
+    }
+
+    const blockedBadge = isBlocked ? '<span class="blocked-badge">BLOKKERT</span>' : '';
+
     const sopLinkHtml = task.sopUrl
         ? `<a href="${task.sopUrl}" target="_blank" rel="noopener noreferrer" class="sop-link">📄 SOP</a>`
         : '';
@@ -460,7 +479,8 @@ function renderTaskCard(task) {
         'task-card',
         `role-${roleClass}`,
         isCompleted ? 'completed' : '',
-        needsAttention ? 'overdue' : ''
+        needsAttention ? 'overdue' : '',
+        isBlocked ? 'blocked' : ''
     ].filter(Boolean).join(' ');
 
     return `
@@ -471,13 +491,36 @@ function renderTaskCard(task) {
                     <div class="task-title">${task.taskName}</div>
                 </div>
                 <div class="task-badges">
+                    ${blockedBadge}
                     ${roleBadge}
                     ${sopLinkHtml}
                 </div>
             </div>
             ${infoLine}
+            ${dependencyHtml}
         </div>
     `;
+}
+
+function getDependencyInfo(task) {
+    if (!task.dependsOn || task.dependsOn.length === 0) return [];
+    return task.dependsOn.map(depId => {
+        const depTask = allTasks.find(t => t.id === depId);
+        return {
+            id: depId,
+            name: depTask ? depTask.taskName : depId,
+            completed: completedTasks.has(depId)
+        };
+    });
+}
+
+function scrollToTask(taskId) {
+    const taskCard = document.querySelector(`.task-card[data-task-id="${taskId}"]`);
+    if (taskCard) {
+        taskCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        taskCard.classList.add('highlight-pulse');
+        setTimeout(() => taskCard.classList.remove('highlight-pulse'), 2000);
+    }
 }
 
 function setupFirebaseListener() {
@@ -529,6 +572,15 @@ function setupCheckboxListeners() {
             
             await saveTaskStatus(taskId, isChecked);
             renderTasks();
+        });
+    });
+}
+
+function setupDependencyLinks() {
+    document.querySelectorAll('.dependency-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            scrollToTask(link.dataset.depId);
         });
     });
 }
