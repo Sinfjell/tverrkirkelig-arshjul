@@ -400,7 +400,8 @@ function renderTasks() {
         html += '</div></div>';
     }
     
-    const tasksByMonth = organizeTasksByMonth(filteredTasks);
+    const nonOverdueTasks = filteredTasks.filter(task => !overdueTasks.includes(task));
+    const tasksByMonth = organizeTasksByMonth(nonOverdueTasks);
     const sortedMonths = getSortedMonthOrder();
     
     sortedMonths.forEach(month => {
