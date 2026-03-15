@@ -442,6 +442,16 @@ body {
     white-space: nowrap;
 }
 
+.tag-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #7c5cbf;
+}
+
 /* Task dependencies */
 .task-dependencies {
     font-size: 0.85rem;

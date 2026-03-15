@@ -2,6 +2,7 @@
 let allTasks = [];
 let currentFilter = 'all';
 let currentPersonFilter = 'all';
+let currentTagFilter = 'all';
 let completedTasks = new Set();
 
 const monthNames = [
@@ -109,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadCompletedTasks();
     checkForNewYearReset();
     generatePersonFilterButtons();
+    generateTagFilterButtons();
     setupFilterButtons();
     setupFilterToggle();
     renderTasks();
@@ -141,6 +143,35 @@ function generatePersonFilterButtons() {
         button.dataset.person = assignee;
         button.textContent = assignee;
         personFilterContainer.appendChild(button);
+    });
+}
+
+function generateTagFilterButtons() {
+    const tagFilterContainer = document.getElementById('tag-filter-buttons');
+    if (!tagFilterContainer) return;
+
+    // Get all unique tags from tasks
+    const allTags = new Set();
+    allTasks.forEach(task => {
+        if (task.tags && task.tags.length > 0) {
+            task.tags.forEach(tag => allTags.add(tag));
+        }
+    });
+
+    // Sort tags alphabetically
+    const sortedTags = Array.from(allTags).sort();
+
+    // Clear existing buttons (except "Alle")
+    const existingButtons = tagFilterContainer.querySelectorAll('.filter-btn:not([data-tag="all"])');
+    existingButtons.forEach(button => button.remove());
+
+    // Add buttons for each tag
+    sortedTags.forEach(tag => {
+        const button = document.createElement('button');
+        button.className = 'filter-btn';
+        button.dataset.tag = tag;
+        button.textContent = tag;
+        tagFilterContainer.appendChild(button);
     });
 }
 
@@ -199,12 +230,24 @@ function setupFilterButtons() {
     
     // Person filter buttons
     const personFilterButtons = document.querySelectorAll('#person-filter-buttons .filter-btn');
-    
+
     personFilterButtons.forEach(button => {
         button.addEventListener('click', () => {
             personFilterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             currentPersonFilter = button.dataset.person;
+            renderTasks();
+        });
+    });
+
+    // Tag filter buttons
+    const tagFilterButtons = document.querySelectorAll('#tag-filter-buttons .filter-btn');
+
+    tagFilterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tagFilterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentTagFilter = button.dataset.tag;
             renderTasks();
         });
     });
@@ -244,11 +287,18 @@ function getFilteredTasks() {
     
     // Filter by person
     if (currentPersonFilter !== 'all') {
-        filteredTasks = filteredTasks.filter(task => 
+        filteredTasks = filteredTasks.filter(task =>
             task.assignees && task.assignees.includes(currentPersonFilter)
         );
     }
-    
+
+    // Filter by tag
+    if (currentTagFilter !== 'all') {
+        filteredTasks = filteredTasks.filter(task =>
+            task.tags && task.tags.includes(currentTagFilter)
+        );
+    }
+
     return filteredTasks;
 }
 
@@ -472,6 +522,10 @@ function renderTaskCard(task) {
 
     const blockedBadge = isBlocked ? '<span class="blocked-badge">BLOKKERT</span>' : '';
 
+    const tagBadges = (task.tags || [])
+        .map(tag => `<span class="tag-badge">${tag}</span>`)
+        .join('');
+
     const sopLinkHtml = task.sopUrl
         ? `<a href="${task.sopUrl}" target="_blank" rel="noopener noreferrer" class="sop-link">📄 SOP</a>`
         : '';
@@ -494,6 +548,7 @@ function renderTaskCard(task) {
                 <div class="task-badges">
                     ${blockedBadge}
                     ${roleBadge}
+                    ${tagBadges}
                     ${sopLinkHtml}
                 </div>
             </div>

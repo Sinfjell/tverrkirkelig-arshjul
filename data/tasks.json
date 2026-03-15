@@ -125,6 +125,56 @@
     "sopUrl": "https://docs.google.com/document/d/1etgScbLVuxuGHf1RnEdMayLiA5ipg1i8sPKYh8Bi1p0/edit?tab=t.0",
     "assignees": ["Johannes Bjørkholt"],
     "dueDate": "2026-01-10"
+  },
+  {
+    "id": "strat-lnu-nominasjon",
+    "taskName": "Nominasjon til valgkomite og styret i LNU",
+    "role": "Admin",
+    "month": 2,
+    "monthName": "Februar",
+    "tags": ["Strategisk"],
+    "sopUrl": "https://www.lnu.no/om-lnu/barne-og-ungdomstinget/",
+    "assignees": [],
+    "dueDate": "2026-02-10"
+  },
+  {
+    "id": "strat-sms-stottemedlemmer",
+    "taskName": "SMS-varsel til fjorårets medlemmer (støttemedlemmer)",
+    "role": "Admin",
+    "month": 12,
+    "monthName": "Desember",
+    "tags": ["Strategisk"],
+    "assignees": [],
+    "dueDate": "2026-12-10"
+  },
+  {
+    "id": "strat-sms-sentral-innkreving",
+    "taskName": "SMS-varsel til tidligere medlemmer (sentral innkreving)",
+    "role": "Admin",
+    "month": 1,
+    "monthName": "Januar",
+    "tags": ["Strategisk"],
+    "assignees": []
+  },
+  {
+    "id": "strat-oppfolging-lokallag",
+    "taskName": "Oppfølging av lokallag",
+    "role": "Lokallag",
+    "month": 9,
+    "monthName": "September",
+    "tags": ["Strategisk"],
+    "sopUrl": "https://docs.google.com/document/d/1eevDgIXBpmwDjkYy3BwupwVO5yghXeyFU23I8ZN_MeQ/edit?tab=t.0#heading=h.up1f83j88swx",
+    "assignees": [],
+    "dueDate": "2026-09-30"
+  },
+  {
+    "id": "strat-samtale-lokallag",
+    "taskName": "Samtale med våre lokallag",
+    "role": "Lokallag",
+    "month": 1,
+    "monthName": "Januar",
+    "tags": ["Strategisk"],
+    "assignees": []
   }
 ]
 
