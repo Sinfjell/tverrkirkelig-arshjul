@@ -273,6 +273,7 @@ body {
 }
 
 .task-card {
+    position: relative;
     background-color: var(--color-lighter-gray);
     border-left: 3px solid var(--color-gray);
     padding: 12px 16px;
@@ -440,6 +441,61 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
+}
+
+.tag-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #7c5cbf;
+}
+
+/* Task description tooltip — triggered by hovering the whole card */
+.task-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    width: 320px;
+    background-color: #ffffff;
+    color: #1a1a1a;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.6;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #d0d7de;
+    z-index: 200;
+    pointer-events: none;
+    white-space: normal;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.task-tooltip::before {
+    content: '💡 Mer info';
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6e40c9;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+
+.task-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 20px;
+    border: 7px solid transparent;
+    border-top-color: #d0d7de;
+}
+
+.task-card.has-tooltip:hover .task-tooltip {
+    display: block;
 }
 
 /* Task dependencies */
