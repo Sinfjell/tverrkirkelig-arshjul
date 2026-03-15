@@ -450,7 +450,8 @@ function renderTasks() {
         html += '</div></div>';
     }
     
-    const nonOverdueTasks = filteredTasks.filter(task => !overdueTasks.includes(task));
+    const overdueIds = new Set(overdueTasks.map(t => t.id));
+    const nonOverdueTasks = filteredTasks.filter(task => !overdueIds.has(task.id));
     const tasksByMonth = organizeTasksByMonth(nonOverdueTasks);
     const sortedMonths = getSortedMonthOrder();
     
@@ -530,8 +531,8 @@ function renderTaskCard(task) {
         ? `<a href="${task.sopUrl}" target="_blank" rel="noopener noreferrer" class="sop-link">📄 SOP</a>`
         : '';
 
-    const descriptionTooltip = task.description
-        ? `<span class="task-info-icon" aria-label="Mer info">ℹ<span class="task-tooltip">${task.description}</span></span>`
+    const descriptionTooltipHtml = task.description
+        ? `<div class="task-tooltip">${task.description}</div>`
         : '';
 
     const cardClasses = [
@@ -539,15 +540,17 @@ function renderTaskCard(task) {
         `role-${roleClass}`,
         isCompleted ? 'completed' : '',
         needsAttention ? 'overdue' : '',
-        isBlocked ? 'blocked' : ''
+        isBlocked ? 'blocked' : '',
+        task.description ? 'has-tooltip' : ''
     ].filter(Boolean).join(' ');
 
     return `
         <div class="${cardClasses}" data-role="${task.role || 'all'}" data-task-id="${task.id}">
+            ${descriptionTooltipHtml}
             <div class="task-header">
                 <div class="task-checkbox-wrapper">
                     <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${isCompleted ? 'checked' : ''}>
-                    <div class="task-title">${task.taskName}${descriptionTooltip}</div>
+                    <div class="task-title">${task.taskName}</div>
                 </div>
                 <div class="task-badges">
                     ${blockedBadge}
