@@ -530,6 +530,10 @@ function renderTaskCard(task) {
         ? `<a href="${task.sopUrl}" target="_blank" rel="noopener noreferrer" class="sop-link">📄 SOP</a>`
         : '';
 
+    const descriptionTooltip = task.description
+        ? `<span class="task-info-icon" aria-label="Mer info">ℹ<span class="task-tooltip">${task.description}</span></span>`
+        : '';
+
     const cardClasses = [
         'task-card',
         `role-${roleClass}`,
@@ -543,7 +547,7 @@ function renderTaskCard(task) {
             <div class="task-header">
                 <div class="task-checkbox-wrapper">
                     <input type="checkbox" class="task-checkbox" data-task-id="${task.id}" ${isCompleted ? 'checked' : ''}>
-                    <div class="task-title">${task.taskName}</div>
+                    <div class="task-title">${task.taskName}${descriptionTooltip}</div>
                 </div>
                 <div class="task-badges">
                     ${blockedBadge}

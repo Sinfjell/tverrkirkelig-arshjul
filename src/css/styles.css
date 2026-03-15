@@ -452,6 +452,63 @@ body {
     background-color: #7c5cbf;
 }
 
+/* Task description tooltip */
+.task-info-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background-color: #9e9e9e;
+    color: #fff;
+    font-size: 0.65rem;
+    font-style: normal;
+    font-weight: 700;
+    cursor: default;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.task-info-icon:hover .task-tooltip {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.task-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: 260px;
+    background-color: #333;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 1.4;
+    padding: 8px 12px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    white-space: normal;
+    z-index: 100;
+    text-align: left;
+}
+
+.task-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+}
+
 /* Task dependencies */
 .task-dependencies {
     font-size: 0.85rem;
