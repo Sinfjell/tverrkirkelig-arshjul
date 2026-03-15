@@ -159,15 +159,6 @@
     "sopUrl": "https://docs.google.com/document/d/1eevDgIXBpmwDjkYy3BwupwVO5yghXeyFU23I8ZN_MeQ/edit?tab=t.0#heading=h.up1f83j88swx",
     "assignees": [],
     "dueDate": "2026-09-30"
-  },
-  {
-    "id": "strat-samtale-lokallag",
-    "taskName": "Samtale med våre lokallag",
-    "role": "Lokallag",
-    "month": 1,
-    "monthName": "Januar",
-    "tags": ["Strategisk"],
-    "assignees": []
   }
 ]
 
