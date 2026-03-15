@@ -145,6 +145,7 @@
     "month": 12,
     "monthName": "Desember",
     "tags": ["Strategisk"],
+    "description": "Sende ut SMS-varsel til fjorårets medlemmer med oppfordring om å melde seg inn som støttemedlemmer for det kommende året.",
     "assignees": [],
     "dueDate": "2026-12-10"
   },
@@ -155,6 +156,7 @@
     "month": 1,
     "monthName": "Januar",
     "tags": ["Strategisk"],
+    "description": "Sende ut SMS-varsel til tidligere medlemmer med oppfordring om å melde seg inn gjennom sentral innkreving.",
     "assignees": []
   },
   {
