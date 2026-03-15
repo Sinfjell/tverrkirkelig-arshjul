@@ -150,16 +150,6 @@
     "dueDate": "2026-12-10"
   },
   {
-    "id": "strat-sms-sentral-innkreving",
-    "taskName": "SMS-varsel til tidligere medlemmer (sentral innkreving)",
-    "role": "Admin",
-    "month": 1,
-    "monthName": "Januar",
-    "tags": ["Strategisk"],
-    "description": "Sende ut SMS-varsel til tidligere medlemmer med oppfordring om å melde seg inn gjennom sentral innkreving.",
-    "assignees": []
-  },
-  {
     "id": "strat-oppfolging-lokallag",
     "taskName": "Oppfølging av lokallag",
     "role": "Lokallag",
